@@ -2,6 +2,7 @@
 import json
 import os
 from datetime import datetime, timedelta
+from routes.userAPI import user_api  
 
 #PSQL
 import psycopg2
@@ -22,7 +23,7 @@ app.config['JWT_TOKEN_LOCATION'] = ['headers']
 # JWT Initialization
 jwt = JWTManager(app)
 
-
+app.register_blueprint(user_api) 
 
 # Blacklist to store revoked tokens
 blacklist = set()
@@ -34,17 +35,31 @@ def check_if_token_in_blacklist(jwt_header, jwt_payload):
 
 
 #Register Path
+'''
 @app.route('/register', methods=['POST'])
-@jwt_required
+##jwt_required
 def register():
+    data = request.json
+    username = data.get("username")
+    email = data.get("email")
+    phone = data.get("phone")
+    password = data.get("password")
 
+    # TODO: Implement user registration logic (For now, return a success response)
+    return {"message": "User registered successfully", "username": username}, 201
+'''
 
 #Login Path
+'''
 @app.route('/login', methods=['POST'])
 def login():
-    
-    
-    
+    data = request.json
+    email = data.get("email")
+    password = data.get("password")
+
+    # TODO: Implement login logic (For now, return a mock response)
+    return {"message": "Login successful", "email": email}, 200'
+'''
 #Logout Path
 @app.route('/logout', methods=['POST'])
 @jwt_required()
@@ -56,9 +71,6 @@ def logout():
     blacklist.add(jti)  # Add the token's jti to the blacklist
     
     return {'Message': 'Successfully logged out'}, 200
-
-
-
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))

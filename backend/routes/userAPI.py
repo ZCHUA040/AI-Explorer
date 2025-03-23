@@ -1,6 +1,6 @@
 from flask import Blueprint, request
 #from flask_jwt_extended import jwt_required, get_jwt_identity
-from control.user_controller import UserController
+from backend.control.user_controller import UserController
 
 user_api = Blueprint('user_api', __name__)
 user_controller = UserController()
@@ -26,9 +26,4 @@ def login():
     if not identifier or not password:
         return{"error" : "Missing required fields"},400
     
-    return user_controller.authenticate_user(identifier, password)
-    
-
-
-
-    
+    return user_controller.authenticate_user(identifier, password)    

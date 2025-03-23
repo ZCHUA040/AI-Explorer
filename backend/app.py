@@ -2,14 +2,24 @@
 import json
 import os
 from datetime import datetime, timedelta
-from routes.userAPI import user_api  
 
 #PSQL
 import psycopg2
 
+#SQLite
+import sqlite3
+
+
 #Flask
-from flask import Flask, request, send_file
-from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt
+from flask import Flask, request, send_file, jsonify
+from flask_jwt_extended import JWTManager, jwt_required, get_jwt, get_jwt_identity
+from flask_bcrypt import Bcrypt
+from datetime import timedelta
+from flask_sqlalchemy import SQLAlchemy
+
+#DB
+from backend.control import user_controller 
+from entity.models import db, User, Session
 
 
 # Flask app setup https://blog.miguelgrinberg.com/post/how-to-create-a-react--flask-project
@@ -19,11 +29,19 @@ app.secret_key = os.environ.get("SECRET_KEY") or os.urandom(24)
 #Configure JWT
 app.config["JWT_SECRET_KEY"] = 'your_jwt_secret_key'
 app.config['JWT_TOKEN_LOCATION'] = ['headers']
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
+
+#Configure SQLite Database
+# Configure SQLite Database
+db_path = r'C:\Users\chuaz\OneDrive\Desktop\SC2006\database.db' #change to remote desktop configuration (after testing )
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Initialize SQLAlchemy
+db.init_app(app)
 
 # JWT Initialization
 jwt = JWTManager(app)
-
-app.register_blueprint(user_api) 
 
 # Blacklist to store revoked tokens
 blacklist = set()
@@ -33,46 +51,56 @@ blacklist = set()
 def check_if_token_in_blacklist(jwt_header, jwt_payload):
     return jwt_payload['jti'] in blacklist
 
+# Users Path
+@app.route('/users')
+def get_users():
+    users = User.query.all()
+    return {'users': [{'id': user.id, 'username': user.username, 'email': user.email, 'password' : user.password_hash} for user in users]}
 
 #Register Path
-'''
 @app.route('/register', methods=['POST'])
 ##jwt_required
 def register():
     data = request.json
     username = data.get("username")
     email = data.get("email")
-    phone = data.get("phone")
     password = data.get("password")
-
+    return user_controller.register_user(username, email, password)
     # TODO: Implement user registration logic (For now, return a success response)
-    return {"message": "User registered successfully", "username": username}, 201
-'''
 
 #Login Path
-'''
 @app.route('/login', methods=['POST'])
 def login():
     data = request.json
     email = data.get("email")
     password = data.get("password")
-
+    return user_controller.login_user(email, password)
     # TODO: Implement login logic (For now, return a mock response)
-    return {"message": "Login successful", "email": email}, 200'
-'''
+    #return {"message": "Login successful", "email": email}, 200
+
 #Logout Path
-@app.route('/logout', methods=['POST'])
+@app.route('/logout', methods=['DELETE'])
 @jwt_required()
-def logout():
-    data = request.json
-    username = data["Username"]
-    
+def logout():    
     jti = get_jwt()['jti']  # JWT ID
     blacklist.add(jti)  # Add the token's jti to the blacklist
-    
     return {'Message': 'Successfully logged out'}, 200
 
+#Validate session for user path
+@app.route('/validateuserlogin', methods=['GET'])
+@jwt_required()
+def validate_session():
+    try:
+        current_user_id = get_jwt_identity()
+        return {"message": f"Hello User {current_user_id}, this is a protected route!"}, 200
+    
+    except Exception as e:
+        return {"error": str(e)}, 401
+
 if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
+
     port = int(os.environ.get('PORT', 5000))
     #app.debug = False
     

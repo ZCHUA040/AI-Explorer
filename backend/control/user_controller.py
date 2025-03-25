@@ -38,7 +38,7 @@ def register_user(username, email, password):
         return {"error": "User registration unsuccessful", "details": str(e)}, 500
 
 def login_user(email,password):
-    if not email or not password: 
+    if not email or not password:
         return{"error" : "Email and password are required"}, 400
     
     user = User.query.filter(User.email == email).first()

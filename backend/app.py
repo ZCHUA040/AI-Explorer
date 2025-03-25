@@ -9,18 +9,19 @@ import psycopg2
 #SQLite
 import sqlite3
 
-
 #Flask
 from flask import Flask, request, send_file, jsonify
 from flask_jwt_extended import JWTManager, jwt_required, get_jwt, get_jwt_identity
 from flask_bcrypt import Bcrypt
 from datetime import timedelta
 from flask_sqlalchemy import SQLAlchemy
+from flask_mail import Mail
+
 
 #DB
-from backend.control import user_controller 
+from backend.control import recovery_account_controller
+from control import user_controller
 from entity.models import db, User, Session
-
 
 # Flask app setup https://blog.miguelgrinberg.com/post/how-to-create-a-react--flask-project
 app = Flask(__name__)
@@ -32,10 +33,19 @@ app.config['JWT_TOKEN_LOCATION'] = ['headers']
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
 
 #Configure SQLite Database
-# Configure SQLite Database
 db_path = r'C:\Users\chuaz\OneDrive\Desktop\SC2006\database.db' #change to remote desktop configuration (after testing )
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+
+#Configure mailbox
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'sc2006.scsb.t5@gmail.com'
+app.config['MAIL_PASSWORD'] = 'vado ihip dmkz xjvs'
+app.config['MAIL_DEFAULT_SENDER'] = 'sc2006.scsb.t5@gmail.com'
+mail = Mail(app)
 
 # Initialize SQLAlchemy
 db.init_app(app)
@@ -96,6 +106,21 @@ def validate_session():
     
     except Exception as e:
         return {"error": str(e)}, 401
+    
+
+#Recovery Account - Password Reset Path
+@app.route('/forgot-password', methods=['POST'])   
+def forgot_password():
+    data = request.json
+    email = data.get("email")
+    return recovery_account_controller.forgot_password_request(email)
+
+@app.route('/reset-password', methods=['POST'])   
+def reset_password():
+    data = request.json
+    token = data.get("token")
+    new_password = request.json.get("new_password")
+    return recovery_account_controller.reset_password(token,new_password)
 
 if __name__ == '__main__':
     with app.app_context():

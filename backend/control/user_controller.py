@@ -31,17 +31,20 @@ def register_user(username, email, password):
         new_user = User(username=username, email = email, password_hash = hashed_password)
         db.session.add(new_user)
         db.session.commit()
-        return {"message": "User registered successfully", "username": username}, 201
+        return {"message": "Account registered successfully"}, 201
     
     except Exception as e:
         db.session.rollback()
         return {"error": "User registration unsuccessful", "details": str(e)}, 500
 
-def login_user(email,password):
-    if not email or not password:
-        return{"error" : "Email and password are required"}, 400
+def login_user(username,password):
+    if not username:
+        return{"error" : "Username is required"}, 400
     
-    user = User.query.filter(User.email == email).first()
+    if not password:
+        return{"error" : "Password is required"}, 400
+    
+    user = User.query.filter(User.username == username).first()
 
     if not user or not bcrypt.check_password_hash(user.password_hash , password):
         return{"error" : "Invalid email or password"}, 401

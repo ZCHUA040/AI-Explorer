@@ -82,9 +82,9 @@ def register():
 @app.route('/login', methods=['POST'])
 def login():
     data = request.json
-    email = data.get("email")
+    username = data.get("username")
     password = data.get("password")
-    return user_controller.login_user(email, password)
+    return user_controller.login_user(username, password)
     # TODO: Implement login logic (For now, return a mock response)
     #return {"message": "Login successful", "email": email}, 200
 

@@ -15,3 +15,4 @@ class Session(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('User.id'), nullable=False)
     token = db.Column(db.String(255), unique=True, nullable=False)
     expires_at = db.Column(db.Text, nullable=False)  # TEXT for timestamp
+    

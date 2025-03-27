@@ -21,7 +21,7 @@ from flask_mail import Mail
 #DB
 from control import recovery_account_controller
 from control import user_controller
-from entity.models import db, User, Session
+from entity.models import db, User
 
 # Flask app setup https://blog.miguelgrinberg.com/post/how-to-create-a-react--flask-project
 app = Flask(__name__)

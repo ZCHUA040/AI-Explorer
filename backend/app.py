@@ -138,7 +138,7 @@ def get_all_activities():
     Route: /get_all_activities
     Authentication: True
     Input: -
-    Output: List of JSON objects, containing fields Activityid, Name, Type, Location and Price. Identifier is Activityid
+    Output: List of JSON objects, containing fields Activityid, Name, Type, Location, Price and Price Category. Identifier is Activityid
     """
     return activity_controller.get_all_activities(), 200
     
@@ -151,7 +151,7 @@ def get_activity_by_id():
     Route: /get_activity_by_id
     Authentication: True
     Input: id
-    Output: One JSON object, containing fields Activityid, Name, Type, Location and Price. Identifier is Activityid
+    Output: One JSON object, containing fields Activityid, Name, Type, Location, Price and Price Category. Identifier is Activityid
     """
     #Load and prep the activityid input
     data = request.json
@@ -175,7 +175,7 @@ def get_activities_by_type():
             'Social & Community Events', 
             'Workshops & Classes'
             ]
-    Output: List of JSON objects, containing fields Activityid, Name, Type, Location and Price. Identifier is Activityid
+    Output: List of JSON objects, containing fields Activityid, Name, Type, Location, Price and Price Category. Identifier is Activityid
     """
     
     #Process type input
@@ -196,6 +196,41 @@ def get_activities_by_type():
     
     
     return activity_controller.get_activities_by_type(type), 200
+
+
+#Get activities by price category
+@app.route("/get_activities_by_price_category", method=["POST"])
+@jwt_required
+def get_activities_by_price_category():
+    """
+    Route: /get_activities_by_price_category
+    Authentication: True
+    Input: One of these categories -> [
+            'Free', 
+            '$', 
+            '$$', 
+            '$$$', 
+            ]
+    Output: List of JSON objects, containing fields Activityid, Name, Type, Location, Price and Price Category. Identifier is Activityid
+    """
+    #Process price category input
+    data = request.json
+    price_category = data.get("Price Category")
+    
+    #Validate type
+    all_types = [
+            'Free', 
+            '$', 
+            '$$', 
+            '$$$', 
+            ]
+    if type not in all_types:
+        return {"Error": "Invalid price category given"}, 400
+    
+    
+    return activity_controller.get_activities_by_price_category(price_category), 200
+
+
 
 
 

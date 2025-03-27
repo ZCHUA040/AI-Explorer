@@ -21,6 +21,7 @@ from flask_mail import Mail
 #DB
 from control import recovery_account_controller
 from control import user_controller
+from control import activity_controller
 from entity.models import db, User
 
 # Flask app setup https://blog.miguelgrinberg.com/post/how-to-create-a-react--flask-project
@@ -121,6 +122,44 @@ def reset_password():
     token = data.get("token")
     new_password = request.json.get("new_password")
     return recovery_account_controller.reset_password(token,new_password)
+
+
+
+
+
+
+#----------------------------------------------Activity related apis------------------------------------------------
+
+#Get all activities
+@app.route("/get_all_activities", methods=["GET"])
+@jwt_required
+def get_all_activities():
+    """
+    Route: /get_all_activities
+    Authentication: True
+    Input: -
+    Output: List of JSON objects, containing fields Activityid, Name, Type, Location and Price. Identifier is Activityid
+    """
+    return activity_controller.get_all_activities()
+    
+
+#Get activity by id (Activityid)
+@app.route("/get_activity_by_id", method=["POST"])
+@jwt_required
+def get_activity_by_id():
+    """
+    Route: /get_activity_by_id
+    Authentication: True
+    Input: id
+    Output: One JSON object, containing fields Activityid, Name, Type, Location and Price. Identifier is Activityid
+    """
+    #Load and prep the activityid input
+    data = request.json()
+    activityid = data.get("id")
+    
+    return activity_controller.get_activity_by_id(activityid)
+    
+
 
 if __name__ == '__main__':
     with app.app_context():

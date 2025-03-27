@@ -15,5 +15,5 @@ CREATE TABLE "SharedWith" (
     CONSTRAINT "shared"
         FOREIGN KEY ("Sharedid") 
         REFERENCES "User"("Userid")
-        ON DELETE CASCADE,
+        ON DELETE CASCADE
 );

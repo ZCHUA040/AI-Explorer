@@ -140,7 +140,7 @@ def get_all_activities():
     Input: -
     Output: List of JSON objects, containing fields Activityid, Name, Type, Location and Price. Identifier is Activityid
     """
-    return activity_controller.get_all_activities()
+    return activity_controller.get_all_activities(), 200
     
 
 #Get activity by id (Activityid)
@@ -154,10 +154,49 @@ def get_activity_by_id():
     Output: One JSON object, containing fields Activityid, Name, Type, Location and Price. Identifier is Activityid
     """
     #Load and prep the activityid input
-    data = request.json()
+    data = request.json
     activityid = data.get("id")
     
-    return activity_controller.get_activity_by_id(activityid)
+    return activity_controller.get_activity_by_id(activityid), 200
+
+
+#Get activities by type ('Cultural & Heritage', 'Fitness & Wellness', 'Food & Beverage', 'Outdoor & Nature', 'Social & Community Events', 'Workshops & Classes')
+@app.route("/get_activities_by_type", method=["POST"])
+@jwt_required
+def get_activities_by_type():
+    """
+    Route: /get_activities_by_type
+    Authentication: True
+    Input: One of these types -> [
+            'Cultural & Heritage', 
+            'Fitness & Wellness', 
+            'Food & Beverage', 
+            'Outdoor & Nature', 
+            'Social & Community Events', 
+            'Workshops & Classes'
+            ]
+    Output: List of JSON objects, containing fields Activityid, Name, Type, Location and Price. Identifier is Activityid
+    """
+    
+    #Process type input
+    data = request.json
+    type = data.get("Type")
+    
+    #Validate type
+    all_types = [
+            'Cultural & Heritage', 
+            'Fitness & Wellness', 
+            'Food & Beverage', 
+            'Outdoor & Nature', 
+            'Social & Community Events', 
+            'Workshops & Classes'
+            ]
+    if type not in all_types:
+        return {"Error": "Invalid type given"}, 400
+    
+    
+    return activity_controller.get_activities_by_type(type), 200
+
     
 
 

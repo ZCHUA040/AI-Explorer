@@ -13,7 +13,7 @@ def get_all_activities() -> list:
     conn = sqlite3.connect("../test.db")
     
     #Retrieves activities   
-    activites = conn.execute("SELECT * FROM Activities;")
+    activites = conn.execute("SELECT * FROM Activities;").fetchall()
     
     #Format the output in proper format
     output = []
@@ -34,7 +34,7 @@ def get_all_activities() -> list:
 
 
 
-def get_activity_by_id(int : id) -> str:
+def get_activity_by_id(id : int) -> str:
     """
     Function that returns a single activity based on the activity id.
 
@@ -49,7 +49,7 @@ def get_activity_by_id(int : id) -> str:
     conn = sqlite3.connect("../test.db")
     
     #Retrieve activity
-    raw_activity = conn.execute("SELECT * FROM Activities WHERE Activityid = ?;", id)
+    raw_activity = conn.execute("SELECT * FROM Activities WHERE Activityid = ?;", id).fetchone()
 
     #Format activity into JSON format
     activity = json.dumps({
@@ -65,3 +65,44 @@ def get_activity_by_id(int : id) -> str:
     
     return activity
 
+
+
+def get_activities_by_type(type : str) -> list:
+    """
+    Function that retrieves all activities of requested type.
+
+    Args:
+        type (str): One of these types -> [
+            'Cultural & Heritage', 
+            'Fitness & Wellness', 
+            'Food & Beverage', 
+            'Outdoor & Nature', 
+            'Social & Community Events', 
+            'Workshops & Classes'
+            ]
+
+    Returns:
+        list: Each element is a JSON containing fields Activityid, Name, Type, Location and Price. Identifier is Activityid
+    """
+    #Create connection
+    conn = sqlite3.connect("../test.db")
+    
+    #Retrieve activity
+    raw_activities = conn.execute("SELECT * FROM Activities WHERE Type = ?;", type).fetchall()
+
+    #Format activity into JSON format
+    output = []
+    for raw_activity in raw_activities:
+        activity = json.dumps({
+            "Activityid" : raw_activity[0],
+            "Name" : raw_activity[1],
+            "Type" : raw_activity[2],
+            "Location" : raw_activity[3],
+            "Price" : raw_activity[4]
+        })
+        output.append(activity)
+    
+    #Close connection
+    conn.close()
+    
+    return output

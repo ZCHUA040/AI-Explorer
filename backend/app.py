@@ -197,7 +197,7 @@ def get_activities_by_type():
     
     return activity_controller.get_activities_by_type(type), 200
 
-    
+
 
 
 if __name__ == '__main__':

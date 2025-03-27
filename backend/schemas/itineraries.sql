@@ -8,5 +8,5 @@ CREATE TABLE "Itineraries" (
     CONSTRAINT "user"
         FOREIGN KEY ("Userid") 
         REFERENCES "User"("Userid")
-        ON DELETE CASCADE,
+        ON DELETE CASCADE
 );

@@ -16,6 +16,8 @@ from flask_bcrypt import Bcrypt
 from datetime import timedelta
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail
+from flask_cors import CORS
+
 
 
 #DB
@@ -26,6 +28,16 @@ from entity.models import db, User
 
 # Flask app setup https://blog.miguelgrinberg.com/post/how-to-create-a-react--flask-project
 app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}}, supports_credentials=True)
+
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS')
+    return response
+
+app.secret_key = os.environ.get("SECRET_KEY") or os.urandom(24)
+
 app.secret_key = os.environ.get("SECRET_KEY") or os.urandom(24)
 
 #Configure JWT

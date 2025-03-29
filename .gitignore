@@ -6,3 +6,4 @@ backend/tempCodeRunnerFile.py
 backend/control/__pycache__/user_controller.cpython-311.pyc
 backend/control/__pycache__/recovery_account_controller_v2.cpython-311.pyc
 backend/control/__pycache__/recovery_account_controller.cpython-311.pyc
+backend/control/__pycache__/activity_controller.cpython-311.pyc

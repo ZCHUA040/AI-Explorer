@@ -83,9 +83,9 @@ def register():
 @app.route('/login', methods=['POST'])
 def login():
     data = request.json
-    username = data.get("username")
+    email = data.get("email")
     password = data.get("password")
-    return user_controller.login_user(username, password)
+    return user_controller.login_user(email, password)
     # TODO: Implement login logic (For now, return a mock response)
     #return {"message": "Login successful", "email": email}, 200
 
@@ -127,7 +127,7 @@ def reset_password():
 
 
 
-
+'''
 #----------------------------------------------Activity related apis------------------------------------------------
 
 #Get all activities
@@ -234,7 +234,7 @@ def get_activities_by_price_category():
 
 
 
-
+'''
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()

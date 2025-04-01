@@ -37,14 +37,14 @@ def register_user(username, email, password):
         db.session.rollback()
         return {"error": "User registration unsuccessful", "details": str(e)}, 500
 
-def login_user(username,password):
-    if not username:
-        return{"error" : "Username is required"}, 400
+def login_user(email,password):
+    if not email:
+        return{"error" : "Email is required"}, 400
     
     if not password:
         return{"error" : "Password is required"}, 400
     
-    user = User.query.filter(User.username == username).first()
+    user = User.query.filter(User.email == email).first()
 
     if not user or not bcrypt.check_password_hash(user.password_hash , password):
         return{"error" : "Invalid email or password"}, 401

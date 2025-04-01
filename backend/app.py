@@ -16,6 +16,8 @@ from flask_bcrypt import Bcrypt
 from datetime import timedelta
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail
+from flask_cors import CORS
+
 
 
 #DB
@@ -26,6 +28,16 @@ from entity.models import db, User
 
 # Flask app setup https://blog.miguelgrinberg.com/post/how-to-create-a-react--flask-project
 app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}}, supports_credentials=True)
+
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS')
+    return response
+
+app.secret_key = os.environ.get("SECRET_KEY") or os.urandom(24)
+
 app.secret_key = os.environ.get("SECRET_KEY") or os.urandom(24)
 
 #Configure JWT
@@ -87,9 +99,9 @@ def register():
 @app.route('/login', methods=['POST'])
 def login():
     data = request.json
-    username = data.get("username")
+    email = data.get("email")
     password = data.get("password")
-    return user_controller.login_user(username, password)
+    return user_controller.login_user(email, password)
     # TODO: Implement login logic (For now, return a mock response)
     #return {"message": "Login successful", "email": email}, 200
 
@@ -131,7 +143,7 @@ def reset_password():
 
 
 
-
+'''
 #----------------------------------------------Activity related apis------------------------------------------------
 
 #Get all activities
@@ -238,7 +250,7 @@ def get_activities_by_price_category():
 
 
 
-
+'''
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()

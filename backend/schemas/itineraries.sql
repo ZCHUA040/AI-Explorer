@@ -1,7 +1,7 @@
 CREATE TABLE "Itineraries" (
     "Itineraryid"     INTEGER NOT NULL UNIQUE,
     "Userid"        INTEGER NOT NULL,
-    "Date"       DATETIME NOT NULL,
+    "Date"       DATE NOT NULL,
     "Details"      TEXT NOT NULL,
     "Created"       DATETIME DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY("Itineraryid" AUTOINCREMENT),

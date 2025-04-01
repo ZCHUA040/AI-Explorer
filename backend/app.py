@@ -23,6 +23,7 @@ from flask_cors import CORS
 from control import recovery_account_controller
 from control import user_controller
 from control import activity_controller
+from backend.control import itinerary_controller
 from entity.models import db, User
 
 
@@ -69,6 +70,10 @@ jwt = JWTManager(app)
 
 # Blacklist to store revoked tokens
 blacklist = set()
+
+
+
+#----------------------------------------------Access Control related apis------------------------------------------
 
 # Token blacklist check
 @jwt.token_in_blocklist_loader
@@ -244,10 +249,128 @@ def get_activities_by_price_category():
     return activity_controller.get_activities_by_price_category(price_category), 200
 
 
-
-
-
 '''
+#----------------------------------------------Itinerary related apis------------------------------------------------
+
+@app.route("/get_my_itineraries", methods=["POST"])
+@jwt_required
+def get_my_itineraries():
+    """
+    Route: /get_my_itineraries
+    Authentication: True
+    Input: Userid of current user
+    Output: Each element is a JSON containing fields Itineraryid, Userid, Date, Details, Created
+    """
+    #Retrieve userid
+    data = request.json
+    userid = data["Userid"]
+    
+    return itinerary_controller.get_my_itineraries(userid), 200
+
+
+@app.route("/get_shared_itineraries", methods=["POST"])
+@jwt_required
+def get_shared_itineraries():
+    """
+    Route: /get_shared_itineraries
+    Authentication: True
+    Input: Userid of current user
+    Output: Each element is a JSON containing fields Itineraryid, Userid, Date, Details, Created
+    """
+    #Retrieve userid
+    data = request.json
+    userid = data["Userid"]
+    
+    return itinerary_controller.get_shared_itineraries(userid), 200
+
+
+@app.route("/get_my_itinerary_by_itineraryid", methods=["POST"])
+@jwt_required
+def get_itinerary_by_itineraryid():
+    """
+    Route: /get_my_itinerary_by_itineraryid
+    Authentication: True
+    Input: Itineraryid of itinerary requested
+    Output: A JSON containing fields Itineraryid, Userid, Date, Details, Created
+    """
+    #Retrieve itineraryid
+    data = request.json
+    itineraryid = data["Itineraryid"]
+    
+    return itinerary_controller.get_my_itineraries(itineraryid), 200
+
+
+@app.route("/update_itinerary", methods=["POST"]) 
+@jwt_required
+def update_itinerary():
+    """
+    Route: /update_itinerary
+    Authentication: True
+    Input: Itineraryid of itinerary requested, Date, Details
+    Output: Status of action
+    """
+    #Retrieve itineraryid
+    data = request.json
+    itineraryid = data["Itineraryid"]
+    date = data["Date"]
+    details = data["Details"]
+    
+    status = itinerary_controller.update_itinerary(itineraryid, date, details)
+    
+    if status:
+        return {"Status" : "Success"}, 200
+    
+    return {"Status" : "Error"}, 500
+
+
+@app.route("/delete_itinerary", methods=["POST"])
+@jwt_required
+def delete_itinerary():
+    """
+    Route: /delete_itinerary
+    Authentication: True
+    Input: Itineraryid to delete, Userid
+    Output: Status of action
+    """
+    data = request.json
+    itineraryid = data["Itineraryid"]
+    userid = data["Userid"]
+    
+    status = itinerary_controller.delete_itinerary(userid, itineraryid)
+    
+    if status:
+        return {"Status" : "Success"}, 200
+    
+    return {"Status" : "Error"}, 500
+
+    
+@app.route("/generate_itinerary", methods=["POST"])
+@jwt_required
+def generate_itinerary():
+    """
+    Route: /generate_itinerary
+    Authentication: True
+    Input:   
+        int (userid): Userid of the itineraries that is being requested
+        str (date): Date of itinerary YYYY-MM-DD
+        str (activity_type): Filter for activity, by default None
+        str (price_category): Filter for activity, by default None
+        str (start_time): Start time of itinerary, by default 0800
+        str (end_time): End time of itinerary, by default 2100
+    Output: Generated itinerary
+    """
+    #Get inputs
+    data = request.json
+    userid = data["Userid"]
+    date = data["Date"]
+    activity_type = data["Type"]
+    price_category = data["Price_Category"]
+    start_time = data["Start_Time"]
+    end_time = data["End_Time"]
+    
+    return itinerary_controller.generate_itinerary(userid, date, activity_type, price_category, start_time, end_time)
+    
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()

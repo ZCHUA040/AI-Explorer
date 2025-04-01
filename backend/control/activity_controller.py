@@ -10,7 +10,7 @@ def get_all_activities() -> list:
     """
     
     #Get Connection
-    conn = sqlite3.connect("../test.db")
+    conn = sqlite3.connect("test.db")
     
     #Retrieves activities   
     activites = conn.execute("SELECT * FROM Activities;").fetchall()
@@ -47,10 +47,10 @@ def get_activity_by_id(id : int) -> str:
     """
     
     #Create connection
-    conn = sqlite3.connect("../test.db")
+    conn = sqlite3.connect("test.db")
     
     #Retrieve activity
-    raw_activity = conn.execute("SELECT * FROM Activities WHERE Activityid = ?;", id).fetchone()
+    raw_activity = conn.execute("SELECT * FROM Activities WHERE Activityid = ?;", (id,)).fetchone()
 
     #Format activity into JSON format
     activity = json.dumps({
@@ -87,10 +87,10 @@ def get_activities_by_type(type : str) -> list:
         list: Each element is a JSON containing fields Activityid, Name, Type, Location, Price and Price Category. Identifier is Activityid
     """
     #Create connection
-    conn = sqlite3.connect("../test.db")
+    conn = sqlite3.connect("test.db")
     
     #Retrieve activity
-    raw_activities = conn.execute("SELECT * FROM Activities WHERE Type = ?;", type).fetchall()
+    raw_activities = conn.execute("SELECT * FROM Activities WHERE Type = ?;", (type,)).fetchall()
 
     #Format activity into JSON format
     output = []
@@ -128,10 +128,10 @@ def get_activities_by_price_category(category : str) -> list:
         list: Each element is a JSON containing fields Activityid, Name, Type, Location, Price and Price Category. Identifier is Activityid
     """
     #Create connection
-    conn = sqlite3.connect("../test.db")
+    conn = sqlite3.connect("test.db")
     
     #Retrieve activity
-    raw_activities = conn.execute("SELECT * FROM Activities WHERE Price_Category = ?;", category).fetchall()
+    raw_activities = conn.execute("SELECT * FROM Activities WHERE Price_Category = ?;", (category,)).fetchall()
 
     #Format activity into JSON format
     output = []

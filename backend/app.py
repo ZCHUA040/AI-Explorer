@@ -19,16 +19,17 @@ from flask_mail import Mail
 from flask_cors import CORS
 
 
-
 #DB
 from control import recovery_account_controller
 from control import user_controller
 from control import activity_controller
 from entity.models import db, User
 
+
 # Flask app setup https://blog.miguelgrinberg.com/post/how-to-create-a-react--flask-project
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}}, supports_credentials=True)
+bcrypt = Bcrypt(app)    #initialise bcrypt in flask app
 
 @app.after_request
 def after_request(response):

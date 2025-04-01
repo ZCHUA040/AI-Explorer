@@ -70,9 +70,6 @@ jwt = JWTManager(app)
 
 # Blacklist to store revoked tokens
 blacklist = set()
-
-
-
 #----------------------------------------------Access Control related apis------------------------------------------
 
 # Token blacklist check
@@ -142,7 +139,21 @@ def reset_password():
     return recovery_account_controller.reset_password(token,new_password)
 
 
+#----------------------------------------------Profile related apis------------------------------------------
+@app.route('/profile', methods=['GET'])
+@jwt_required()
+def get_profile():
+    current_user_email = get_jwt_identity()  
+    #will add in the logic
+    return
 
+@app.route('/profile', methods=['PUT'])
+@jwt_required()
+def update_profile():
+    current_user_email = get_jwt_identity()
+    data = request.json
+    #will add in the logic
+    return 
 
 
 '''

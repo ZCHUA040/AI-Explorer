@@ -57,6 +57,10 @@ jwt = JWTManager(app)
 # Blacklist to store revoked tokens
 blacklist = set()
 
+
+
+#----------------------------------------------Access Control related apis------------------------------------------
+
 # Token blacklist check
 @jwt.token_in_blocklist_loader
 def check_if_token_in_blacklist(jwt_header, jwt_payload):

@@ -3,7 +3,7 @@ from flask import current_app
 from flask_mail import Message
 from datetime import timedelta
 from entity.models import db, User
-from app import bcrypt 
+from extensions import bcrypt
 
 def forgot_password_request(email):
     user = User.query.filter(User.email == email).first()

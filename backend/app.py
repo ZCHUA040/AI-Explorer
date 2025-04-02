@@ -12,7 +12,7 @@ import sqlite3
 #Flask
 from flask import Flask, request, send_file, jsonify
 from flask_jwt_extended import JWTManager, jwt_required, get_jwt, get_jwt_identity
-from flask_bcrypt import Bcrypt
+from extensions import bcrypt
 from datetime import timedelta
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail
@@ -23,14 +23,14 @@ from flask_cors import CORS
 from control import recovery_account_controller
 from control import user_controller
 from control import activity_controller
-from backend.control import itinerary_controller
+from control import itinerary_controller
 from entity.models import db, User
 
 
 # Flask app setup https://blog.miguelgrinberg.com/post/how-to-create-a-react--flask-project
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}}, supports_credentials=True)
-bcrypt = Bcrypt(app)    #initialise bcrypt in flask app
+bcrypt.init_app(app)    #initialise bcrypt in flask app
 
 @app.after_request
 def after_request(response):

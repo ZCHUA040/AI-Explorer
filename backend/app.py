@@ -12,7 +12,7 @@ import sqlite3
 #Flask
 from flask import Flask, request, send_file, jsonify
 from flask_jwt_extended import JWTManager, jwt_required, get_jwt, get_jwt_identity
-from flask_bcrypt import Bcrypt
+from extensions import bcrypt
 from datetime import timedelta
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail
@@ -23,14 +23,14 @@ from flask_cors import CORS
 from control import recovery_account_controller
 from control import user_controller
 from control import activity_controller
-from backend.control import itinerary_controller
+from control import itinerary_controller
 from entity.models import db, User
 
 
 # Flask app setup https://blog.miguelgrinberg.com/post/how-to-create-a-react--flask-project
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}}, supports_credentials=True)
-bcrypt = Bcrypt(app)    #initialise bcrypt in flask app
+bcrypt.init_app(app)    #initialise bcrypt in flask app
 
 @app.after_request
 def after_request(response):
@@ -48,7 +48,7 @@ app.config['JWT_TOKEN_LOCATION'] = ['headers']
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
 
 #Configure SQLite Database
-db_path = r'C:\Users\chuaz\OneDrive\Desktop\SC2006\database.db' #change to remote desktop configuration (after testing )
+db_path = 'test.db' #change to remote desktop configuration (after testing )
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -156,42 +156,42 @@ def update_profile():
     return 
 
 
-'''
+
 #----------------------------------------------Activity related apis------------------------------------------------
 
 #Get all activities
 @app.route("/get_all_activities", methods=["GET"])
-@jwt_required
+#@jwt_required()
 def get_all_activities():
     """
     Route: /get_all_activities
     Authentication: True
     Input: -
-    Output: List of JSON objects, containing fields Activityid, Name, Type, Location, Price and Price Category. Identifier is Activityid
+    Output: List of JSON objects, containing fields Activityid, Name, Type, Location, Price, Price Category, Image and Description. Identifier is Activityid
     """
-    return activity_controller.get_all_activities(), 200
+    return activity_controller.internal_get_all_activities(), 200
     
 
 #Get activity by id (Activityid)
-@app.route("/get_activity_by_id", method=["POST"])
-@jwt_required
+@app.route("/get_activity_by_id", methods=["POST"])
+#@jwt_required()
 def get_activity_by_id():
     """
     Route: /get_activity_by_id
     Authentication: True
     Input: id
-    Output: One JSON object, containing fields Activityid, Name, Type, Location, Price and Price Category. Identifier is Activityid
+    Output: One JSON object, containing fields Activityid, Name, Type, Location, Price, Price Category, Image and Description. Identifier is Activityid
     """
     #Load and prep the activityid input
     data = request.json
     activityid = data.get("id")
     
-    return activity_controller.get_activity_by_id(activityid), 200
+    return activity_controller.internal_get_activity_by_id(activityid), 200
 
 
 #Get activities by type ('Cultural & Heritage', 'Fitness & Wellness', 'Food & Beverage', 'Outdoor & Nature', 'Social & Community Events', 'Workshops & Classes')
-@app.route("/get_activities_by_type", method=["POST"])
-@jwt_required
+@app.route("/get_activities_by_type", methods=["POST"])
+#@jwt_required()
 def get_activities_by_type():
     """
     Route: /get_activities_by_type
@@ -204,7 +204,7 @@ def get_activities_by_type():
             'Social & Community Events', 
             'Workshops & Classes'
             ]
-    Output: List of JSON objects, containing fields Activityid, Name, Type, Location, Price and Price Category. Identifier is Activityid
+    Output: List of JSON objects, containing fields Activityid, Name, Type, Location, Price, Price Category, Image and Description. Identifier is Activityid
     """
     
     #Process type input
@@ -224,12 +224,12 @@ def get_activities_by_type():
         return {"Error": "Invalid type given"}, 400
     
     
-    return activity_controller.get_activities_by_type(type), 200
+    return activity_controller.internal_get_activities_by_type(type), 200
 
 
 #Get activities by price category
-@app.route("/get_activities_by_price_category", method=["POST"])
-@jwt_required
+@app.route("/get_activities_by_price_category", methods=["POST"])
+#@jwt_required()
 def get_activities_by_price_category():
     """
     Route: /get_activities_by_price_category
@@ -240,31 +240,87 @@ def get_activities_by_price_category():
             '$$', 
             '$$$', 
             ]
-    Output: List of JSON objects, containing fields Activityid, Name, Type, Location, Price and Price Category. Identifier is Activityid
+    Output: List of JSON objects, containing fields Activityid, Name, Type, Location, Price, Price Category, Image and Description. Identifier is Activityid
     """
     #Process price category input
     data = request.json
     price_category = data.get("Price Category")
     
-    #Validate type
-    all_types = [
+    #Validate category
+    all_categories = [
+            "Free", 
+            "$", 
+            "$$", 
+            "$$$", 
+            ]
+    if price_category not in all_categories:
+        return {"Error": "Invalid price category given"}, 400
+    
+    
+    return activity_controller.internal_get_activities_by_price_category(price_category), 200
+
+
+#Get activities by price category
+@app.route("/get_activities_by_type_and_price_category", methods=["POST"])
+#@jwt_required()
+def get_activities_by_type_and_price_category():
+    """
+    Route: /get_activities_by_type_and_price_category
+    Authentication: True
+    Input: 
+        One of these types -> [
+            'Cultural & Heritage', 
+            'Fitness & Wellness', 
+            'Food & Beverage', 
+            'Outdoor & Nature', 
+            'Social & Community Events', 
+            'Workshops & Classes'
+            ]
+        
+        One of these categories -> [
             'Free', 
             '$', 
             '$$', 
             '$$$', 
             ]
+    Output: List of JSON objects, containing fields Activityid, Name, Type, Location, Price, Price Category, Image and Description. Identifier is Activityid
+    """
+    #Process price category input
+    data = request.json
+    price_category = data.get("Price Category")
+    type = data.get("Type")
+    
+    #Validate type
+    all_types = [
+            'Cultural & Heritage', 
+            'Fitness & Wellness', 
+            'Food & Beverage', 
+            'Outdoor & Nature', 
+            'Social & Community Events', 
+            'Workshops & Classes'
+            ]
     if type not in all_types:
+        return {"Error": "Invalid type given"}, 400
+    
+    #Validate category
+    all_categories = [
+            "Free", 
+            "$", 
+            "$$", 
+            "$$$", 
+            ]
+    if price_category not in all_categories:
         return {"Error": "Invalid price category given"}, 400
     
     
-    return activity_controller.get_activities_by_price_category(price_category), 200
+    return activity_controller.internal_get_activities_by_type_and_price_category(type, price_category), 200
 
 
-'''
+
 #----------------------------------------------Itinerary related apis------------------------------------------------
 
 @app.route("/get_my_itineraries", methods=["POST"])
-@jwt_required
+@jwt_required()
 def get_my_itineraries():
     """
     Route: /get_my_itineraries
@@ -276,11 +332,11 @@ def get_my_itineraries():
     data = request.json
     userid = data["Userid"]
     
-    return itinerary_controller.get_my_itineraries(userid), 200
+    return itinerary_controller.internal_get_my_itineraries(userid), 200
 
 
 @app.route("/get_shared_itineraries", methods=["POST"])
-@jwt_required
+@jwt_required()
 def get_shared_itineraries():
     """
     Route: /get_shared_itineraries
@@ -292,11 +348,11 @@ def get_shared_itineraries():
     data = request.json
     userid = data["Userid"]
     
-    return itinerary_controller.get_shared_itineraries(userid), 200
+    return itinerary_controller.internal_get_shared_itineraries(userid), 200
 
 
 @app.route("/get_my_itinerary_by_itineraryid", methods=["POST"])
-@jwt_required
+@jwt_required()
 def get_itinerary_by_itineraryid():
     """
     Route: /get_my_itinerary_by_itineraryid
@@ -308,11 +364,11 @@ def get_itinerary_by_itineraryid():
     data = request.json
     itineraryid = data["Itineraryid"]
     
-    return itinerary_controller.get_my_itineraries(itineraryid), 200
+    return itinerary_controller.internal_get_my_itineraries(itineraryid), 200
 
 
 @app.route("/update_itinerary", methods=["POST"]) 
-@jwt_required
+@jwt_required()
 def update_itinerary():
     """
     Route: /update_itinerary
@@ -326,7 +382,7 @@ def update_itinerary():
     date = data["Date"]
     details = data["Details"]
     
-    status = itinerary_controller.update_itinerary(itineraryid, date, details)
+    status = itinerary_controller.internal_update_itinerary(itineraryid, date, details)
     
     if status:
         return {"Status" : "Success"}, 200
@@ -335,7 +391,7 @@ def update_itinerary():
 
 
 @app.route("/delete_itinerary", methods=["POST"])
-@jwt_required
+@jwt_required()
 def delete_itinerary():
     """
     Route: /delete_itinerary
@@ -347,7 +403,7 @@ def delete_itinerary():
     itineraryid = data["Itineraryid"]
     userid = data["Userid"]
     
-    status = itinerary_controller.delete_itinerary(userid, itineraryid)
+    status = itinerary_controller.internal_delete_itinerary(userid, itineraryid)
     
     if status:
         return {"Status" : "Success"}, 200
@@ -356,7 +412,7 @@ def delete_itinerary():
 
     
 @app.route("/generate_itinerary", methods=["POST"])
-@jwt_required
+@jwt_required()
 def generate_itinerary():
     """
     Route: /generate_itinerary
@@ -379,7 +435,7 @@ def generate_itinerary():
     start_time = data["Start_Time"]
     end_time = data["End_Time"]
     
-    return itinerary_controller.generate_itinerary(userid, date, activity_type, price_category, start_time, end_time)
+    return itinerary_controller.internal_generate_itinerary(userid, date, activity_type, price_category, start_time, end_time)
     
 
 if __name__ == '__main__':

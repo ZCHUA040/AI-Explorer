@@ -3,5 +3,6 @@ CREATE TABLE "User" (
 	"Name"		TEXT NOT NULL UNIQUE,
 	"Password"	TEXT NOT NULL,
 	"Email"	TEXT NOT NULL,
+	"UserImage" BLOB NOT NULL,
 	PRIMARY KEY("Userid" AUTOINCREMENT)
 );

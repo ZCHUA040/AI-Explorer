@@ -5,7 +5,7 @@ import random
 from dotenv import load_dotenv
 
 
-def get_my_itineraries(userid : int) -> list:
+def internal_get_my_itineraries(userid : int) -> list:
     """
     Function that retrieves all of 'my' itineraries 
 
@@ -40,7 +40,7 @@ def get_my_itineraries(userid : int) -> list:
 
 
 
-def get_shared_itineraries(userid : int) -> list:
+def internal_get_shared_itineraries(userid : int) -> list:
     """
     Function that retrieves all of itineraries shared with me
 
@@ -80,7 +80,7 @@ def get_shared_itineraries(userid : int) -> list:
 
 
 
-def get_itinerary_by_itineraryid(itineraryid : int) -> str:
+def internal_get_itinerary_by_itineraryid(itineraryid : int) -> str:
     """
     Function to retrieve a specific itinerary by itineraryid
 
@@ -113,7 +113,7 @@ def get_itinerary_by_itineraryid(itineraryid : int) -> str:
 
 
 
-def update_itinerary(itineraryid : int, date : str, details : str) -> bool:
+def internal_update_itinerary(itineraryid : int, date : str, details : str) -> bool:
     """
     Function that updates a specific itinerary date/details based on the itineraryid
 
@@ -149,7 +149,7 @@ def update_itinerary(itineraryid : int, date : str, details : str) -> bool:
     
     
     
-def delete_itinerary(userid : int, itineraryid : int) -> bool:
+def internal_delete_itinerary(userid : int, itineraryid : int) -> bool:
     """
     Function that deletes itinerary
 
@@ -175,7 +175,7 @@ def delete_itinerary(userid : int, itineraryid : int) -> bool:
     
     
     
-def generate_itinerary(userid : int, date : str, activity_type : str = None, price_category : str = None, start_time : str = "0800", end_time : str = "2100") -> str:
+def internal_generate_itinerary(userid : int, date : str, activity_type : str = None, price_category : str = None, start_time : str = "0800", end_time : str = "2100") -> str:
     """
         Function that generates an itineraries based on chosen filtered activities
 
@@ -244,4 +244,4 @@ def generate_itinerary(userid : int, date : str, activity_type : str = None, pri
     conn.commit()
     
     #send itinerary back
-    return get_itinerary_by_itineraryid(cursor.lastrowid)
+    return internal_get_itinerary_by_itineraryid(cursor.lastrowid)

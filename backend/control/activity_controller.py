@@ -1,12 +1,12 @@
 import sqlite3, json
 
 
-def get_all_activities() -> list:
+def internal_get_all_activities() -> list:
     """
     Function that retreives all activites in Activities Table
 
     Returns:
-        list: Each element is a JSON containing fields Activityid, Name, Type, Location, Price and Price Category. Identifier is Activityid
+        list: Each element is a JSON containing fields Activityid, Name, Type, Location, Price, Price Category, Image and Description. Identifier is Activityid
     """
     
     #Get Connection
@@ -24,7 +24,9 @@ def get_all_activities() -> list:
             "Type" : activity[2],
             "Location" : activity[3],
             "Price" : activity[4],
-            "Price Category" : activity[5]
+            "Price Category" : activity[5],
+            "Image" : activity[6],
+            "Description" : activity[7]
         })
         output.append(element)
         
@@ -35,7 +37,7 @@ def get_all_activities() -> list:
 
 
 
-def get_activity_by_id(id : int) -> str:
+def internal_get_activity_by_id(id : int) -> str:
     """
     Function that returns a single activity based on the activity id.
 
@@ -43,7 +45,7 @@ def get_activity_by_id(id : int) -> str:
         int (id): Activityid of the activity that is being requested
 
     Returns:
-        str: JSON containing fields Activityid, Name, Type, Location, Price and Price Category. Identifier is Activityid
+        str: JSON containing fields Activityid, Name, Type, Location, Price, Price Category, Image and Description. Identifier is Activityid
     """
     
     #Create connection
@@ -59,7 +61,9 @@ def get_activity_by_id(id : int) -> str:
         "Type" : raw_activity[2],
         "Location" : raw_activity[3],
         "Price" : raw_activity[4],
-        "Price Category" : activity[5]
+        "Price Category" : raw_activity[5],
+        "Image" : raw_activity[6],
+        "Description" : raw_activity[7]
     })
     
     #Close connection
@@ -69,7 +73,7 @@ def get_activity_by_id(id : int) -> str:
 
 
 
-def get_activities_by_type(type : str) -> list:
+def internal_get_activities_by_type(type : str) -> list:
     """
     Function that retrieves all activities of requested type.
 
@@ -84,7 +88,7 @@ def get_activities_by_type(type : str) -> list:
             ]
 
     Returns:
-        list: Each element is a JSON containing fields Activityid, Name, Type, Location, Price and Price Category. Identifier is Activityid
+        list: Each element is a JSON containing fields Activityid, Name, Type, Location, Price, Price Category, Image and Description. Identifier is Activityid
     """
     #Create connection
     conn = sqlite3.connect("test.db")
@@ -101,7 +105,9 @@ def get_activities_by_type(type : str) -> list:
             "Type" : raw_activity[2],
             "Location" : raw_activity[3],
             "Price" : raw_activity[4],
-            "Price Category" : activity[5]
+            "Price Category" : raw_activity[5],
+            "Image" : raw_activity[6],
+            "Description" : raw_activity[7]
         })
         output.append(activity)
     
@@ -112,12 +118,12 @@ def get_activities_by_type(type : str) -> list:
     
 
 
-def get_activities_by_price_category(category : str) -> list:
+def internal_get_activities_by_price_category(category : str) -> list:
     """
-    Function that retrieves all activities of requested type.
+    Function that retrieves all activities of requested price category.
 
     Args:
-        type (str): One of these categories -> [
+        category (str): One of these categories -> [
             'Free', 
             '$', 
             '$$', 
@@ -125,7 +131,7 @@ def get_activities_by_price_category(category : str) -> list:
             ]
 
     Returns:
-        list: Each element is a JSON containing fields Activityid, Name, Type, Location, Price and Price Category. Identifier is Activityid
+        list: Each element is a JSON containing fields Activityid, Name, Type, Location, Price, Price Category, Image and Description. Identifier is Activityid
     """
     #Create connection
     conn = sqlite3.connect("test.db")
@@ -142,7 +148,61 @@ def get_activities_by_price_category(category : str) -> list:
             "Type" : raw_activity[2],
             "Location" : raw_activity[3],
             "Price" : raw_activity[4],
-            "Price Category" : activity[5]
+            "Price Category" : raw_activity[5],
+            "Image" : raw_activity[6],
+            "Description" : raw_activity[7]
+        })
+        output.append(activity)
+    
+    #Close connection
+    conn.close()
+    
+    return output
+
+
+
+def internal_get_activities_by_type_and_price_category(type : str, category : str) -> list:
+    """
+    Function that retrieves all activities of requested type and category.
+
+    Args:
+        type (str): One of these types -> [
+            'Cultural & Heritage', 
+            'Fitness & Wellness', 
+            'Food & Beverage', 
+            'Outdoor & Nature', 
+            'Social & Community Events', 
+            'Workshops & Classes'
+            ]
+            
+        category (str): One of these categories -> [
+            'Free', 
+            '$', 
+            '$$', 
+            '$$$', 
+            ]
+
+    Returns:
+        list: Each element is a JSON containing fields Activityid, Name, Type, Location, Price, Price Category, Image and Description. Identifier is Activityid
+    """
+    #Create connection
+    conn = sqlite3.connect("test.db")
+    
+    #Retrieve activity
+    raw_activities = conn.execute("SELECT * FROM Activities WHERE Type = ? AND Price_Category = ?;", (type, category)).fetchall()
+
+    #Format activity into JSON format
+    output = []
+    for raw_activity in raw_activities:
+        activity = json.dumps({
+            "Activityid" : raw_activity[0],
+            "Name" : raw_activity[1],
+            "Type" : raw_activity[2],
+            "Location" : raw_activity[3],
+            "Price" : raw_activity[4],
+            "Price Category" : raw_activity[5],
+            "Image" : raw_activity[6],
+            "Description" : raw_activity[7]
         })
         output.append(activity)
     

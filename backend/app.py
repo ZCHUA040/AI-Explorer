@@ -24,8 +24,6 @@ from control import recovery_account_controller
 from control import user_controller
 from control import activity_controller
 from control import itinerary_controller
-from entity.models import db, User
-
 
 # Flask app setup https://blog.miguelgrinberg.com/post/how-to-create-a-react--flask-project
 app = Flask(__name__)
@@ -62,9 +60,6 @@ app.config['MAIL_PASSWORD'] = 'vado ihip dmkz xjvs'
 app.config['MAIL_DEFAULT_SENDER'] = 'sc2006.scsb.t5@gmail.com'
 mail = Mail(app)
 
-# Initialize SQLAlchemy
-db.init_app(app)
-
 # JWT Initialization
 jwt = JWTManager(app)
 
@@ -77,11 +72,34 @@ blacklist = set()
 def check_if_token_in_blacklist(jwt_header, jwt_payload):
     return jwt_payload['jti'] in blacklist
 
+DB_PATH = os.path.join(os.path.dirname(__file__),'test.db')
+
 # Users Path
 @app.route('/users')
 def get_users():
-    users = User.query.all()
-    return {'users': [{'id': user.id, 'username': user.username, 'email': user.email, 'password' : user.password_hash} for user in users]}
+    try: 
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor() 
+
+        cursor.execute("SELECT Userid, Name, Password, Email FROM User")
+        rows = cursor.fetchall()
+        conn.close()
+
+        users = []
+
+        for row in rows:
+            users.append({
+                'userid': row[0],
+                'name' : row[1],
+                'password' : row[2],
+                'email' : row[3]
+
+            })
+
+        return {'users' : users},200
+    
+    except Exception as e:
+        return {'error' : str(e)},500
 
 #Register Path
 @app.route('/register', methods=['POST'])
@@ -467,9 +485,6 @@ def share_itinerary():
     return {"Status" : "Error"}, 500
 
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-
     port = int(os.environ.get('PORT', 5000))
     #app.debug = False
     

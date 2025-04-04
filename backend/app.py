@@ -320,13 +320,13 @@ def get_activities_by_type_and_price_category():
 #----------------------------------------------Itinerary related apis------------------------------------------------
 
 @app.route("/get_my_itineraries", methods=["POST"])
-@jwt_required()
+#@jwt_required()
 def get_my_itineraries():
     """
     Route: /get_my_itineraries
     Authentication: True
     Input: Userid of current user
-    Output: Each element is a JSON containing fields Itineraryid, Userid, Date, Details, Created
+    Output: Each element is a JSON containing fields Itineraryid, Userid, Title, Date, Details, Created
     """
     #Retrieve userid
     data = request.json
@@ -336,13 +336,13 @@ def get_my_itineraries():
 
 
 @app.route("/get_shared_itineraries", methods=["POST"])
-@jwt_required()
+#@jwt_required()
 def get_shared_itineraries():
     """
     Route: /get_shared_itineraries
     Authentication: True
     Input: Userid of current user
-    Output: Each element is a JSON containing fields Itineraryid, Userid, Date, Details, Created
+    Output: Each element is a JSON containing fields Itineraryid, Userid, Title, Date, Details, Created
     """
     #Retrieve userid
     data = request.json
@@ -351,38 +351,39 @@ def get_shared_itineraries():
     return itinerary_controller.internal_get_shared_itineraries(userid), 200
 
 
-@app.route("/get_my_itinerary_by_itineraryid", methods=["POST"])
-@jwt_required()
+@app.route("/get_itinerary_by_itineraryid", methods=["POST"])
+#@jwt_required()
 def get_itinerary_by_itineraryid():
     """
-    Route: /get_my_itinerary_by_itineraryid
+    Route: /get_itinerary_by_itineraryid
     Authentication: True
     Input: Itineraryid of itinerary requested
-    Output: A JSON containing fields Itineraryid, Userid, Date, Details, Created
+    Output: A JSON containing fields Itineraryid, Userid, Title, Date, Details, Created
     """
     #Retrieve itineraryid
     data = request.json
     itineraryid = data["Itineraryid"]
     
-    return itinerary_controller.internal_get_my_itineraries(itineraryid), 200
+    return itinerary_controller.internal_get_itinerary_by_itineraryid(itineraryid), 200
 
 
 @app.route("/update_itinerary", methods=["POST"]) 
-@jwt_required()
+#@jwt_required()
 def update_itinerary():
     """
     Route: /update_itinerary
     Authentication: True
-    Input: Itineraryid of itinerary requested, Date, Details
+    Input: Itineraryid of itinerary requested, Title, Date, Details
     Output: Status of action
     """
     #Retrieve itineraryid
     data = request.json
     itineraryid = data["Itineraryid"]
+    title = data["Title"]
     date = data["Date"]
     details = data["Details"]
     
-    status = itinerary_controller.internal_update_itinerary(itineraryid, date, details)
+    status = itinerary_controller.internal_update_itinerary(itineraryid, title, date, details)
     
     if status:
         return {"Status" : "Success"}, 200
@@ -391,7 +392,7 @@ def update_itinerary():
 
 
 @app.route("/delete_itinerary", methods=["POST"])
-@jwt_required()
+#@jwt_required()
 def delete_itinerary():
     """
     Route: /delete_itinerary
@@ -412,31 +413,58 @@ def delete_itinerary():
 
     
 @app.route("/generate_itinerary", methods=["POST"])
-@jwt_required()
+#@jwt_required()
 def generate_itinerary():
     """
     Route: /generate_itinerary
     Authentication: True
     Input:   
         int (userid): Userid of the itineraries that is being requested
+        str (title): Title of itinerary
         str (date): Date of itinerary YYYY-MM-DD
         str (activity_type): Filter for activity, by default None
         str (price_category): Filter for activity, by default None
         str (start_time): Start time of itinerary, by default 0800
         str (end_time): End time of itinerary, by default 2100
-    Output: Generated itinerary
+    Output: Generated itineraryid
+    """
+    #Get inputs
+    data = request.json
+    userid = data["userid"]
+    title = data["title"]
+    date = data["date"]
+    activity_type = data["activity_type"]
+    price_category = data["price_category"]
+    start_time = data["start_time"]
+    end_time = data["end_time"]
+    
+    return itinerary_controller.internal_generate_itinerary(userid, title, date, activity_type, price_category, start_time, end_time)
+    
+    
+@app.route("/share_itinerary", methods=["POST"])
+#@jwt_required()
+def share_itinerary():
+    """
+    Route: /generate_itinerary
+    Authentication: True
+    Input:   
+        int (userid): Userid of sharer
+        int (itineraryid): Itineraryid of current itinerary to share
+        str (Sharename): Name of user to sharewith 
+    Output: Success or Failure
     """
     #Get inputs
     data = request.json
     userid = data["Userid"]
-    date = data["Date"]
-    activity_type = data["Type"]
-    price_category = data["Price_Category"]
-    start_time = data["Start_Time"]
-    end_time = data["End_Time"]
+    itineraryid = data["Itineraryid"]
+    sharename = data["shareName"]
     
-    return itinerary_controller.internal_generate_itinerary(userid, date, activity_type, price_category, start_time, end_time)
+    status = itinerary_controller.internal_share_itinerary(userid, itineraryid, sharename)
+
+    if status:
+        return {"Status" : "Success"}, 200
     
+    return {"Status" : "Error"}, 500
 
 if __name__ == '__main__':
     with app.app_context():

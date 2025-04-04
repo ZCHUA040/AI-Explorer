@@ -1,5 +1,5 @@
 import sqlite3, json
-
+import random
 
 def internal_get_all_activities() -> list:
     """
@@ -32,7 +32,7 @@ def internal_get_all_activities() -> list:
         
     #Close connection
     conn.close()
-    
+    random.shuffle(output)
     return output
 
 

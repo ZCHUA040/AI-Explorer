@@ -2,27 +2,38 @@ from flask_jwt_extended import create_access_token, decode_token
 from flask import current_app
 from flask_mail import Message
 from datetime import timedelta
-from entity.models import db, User
 from extensions import bcrypt
+import sqlite3,os
+
+DB_PATH = os.path.join(os.path.dirname(__file__), '..', 'test.db')
 
 def forgot_password_request(email):
-    user = User.query.filter(User.email == email).first()
-
-    if not user:
-        return {"error" : "Email not found"}, 404
-    
-    reset_token = create_access_token(
-        identity=user.email,
-        expires_delta=timedelta(hours=1),
-        additional_claims={"type" : "password_reset"}
-    )
-
-    reset_link = f"http://localhost:5173/reset-password?token={reset_token}" ##change when the frontend link works
-    
     try:
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT Email FROM User WHERE Email = ?", (email,))
+        row = cursor.fetchone()
+        conn.close()
+
+
+        if not row:
+            return {"error" : "Email not found"}, 404
+        
+        user_email = row[0]
+    
+        reset_token = create_access_token(
+            identity=user_email,
+            expires_delta=timedelta(hours=1),
+            additional_claims={"type" : "password_reset"}
+        )
+
+        reset_link = f"http://localhost:5173/reset-password?token={reset_token}" ##change when the frontend link works
+
         msg = Message('Password Recovery/Reset',
                       sender = current_app.config['MAIL_USERNAME'],
-                      recipients=[user.email])
+                      recipients=[user_email]
+                      )
         
         msg.body = f'''To reset your password, visit the follwoing link: {reset_link}
         if you did not make this request, please ignore this email
@@ -33,12 +44,46 @@ def forgot_password_request(email):
     except Exception as e:
         current_app.logger.error(f"Failed to send email: {str(e)}")
         return {"error": "Failed to send email"}, 500
+    
+def reset_password(token,new_password):
+        try:
+            decoded = decode_token(token)
+
+            if decoded.get("type") != "password_reset":
+                return {"error": "Invalid token"}, 400
+            
+            user_email = decoded["sub"].lower()
+
+            conn = sqlite3.connect(DB_PATH)
+            cursor = conn.cursor()
+
+            cursor.execute("SELECT Userid FROM User WHERE Email = ?", (user_email,))
+            row = cursor.fetchone()
+
+            if not row:
+                conn.close()
+                return {"error": "User not found"}, 404
+            
+            user_id = row[0]
+
+            new_hashed_password = bcrypt.generate_password_hash(new_password).decode('utf-8')
+
+
+            cursor.execute("UPDATE User SET Password = ? WHERE Userid = ?", (new_hashed_password, user_id))
+            conn.commit()
+            conn.close()
+
+            return {"message": "Password reset successful"}, 200
         
+        except Exception as e:
+            return {"error": "Invalid or expired token", "details": str(e)}, 400
+
+'''        
 def reset_password(token, new_password):
     try:
         decoded = decode_token(token)
         #print("1")
-        if decoded.get("type") != "password_reset":
+        if decoded.get("type") != "password_r   eset":
             return {"error": "Invalid token"}, 400
         #print("2")        
         user = User.query.filter(User.email == decoded["sub"].lower()).first()
@@ -56,5 +101,5 @@ def reset_password(token, new_password):
     except Exception as e:
         #print("Exception in reset_password:", e)   #debugging statement to find the exact error
         return {"error": "Invalid or expired token"}, 400
-
+'''
 

@@ -3,13 +3,12 @@ from flask import current_app
 from flask_mail import Message
 from datetime import timedelta
 from extensions import bcrypt
-import sqlite3,os
+import sqlite3
 
-DB_PATH = os.path.join(os.path.dirname(__file__), '..', 'test.db')
 
 def forgot_password_request(email):
     try:
-        conn = sqlite3.connect(DB_PATH)
+        conn = sqlite3.connect("test.db")
         cursor = conn.cursor()
 
         cursor.execute("SELECT Email FROM User WHERE Email = ?", (email,))
@@ -54,7 +53,7 @@ def reset_password(token,new_password):
             
             user_email = decoded["sub"].lower()
 
-            conn = sqlite3.connect(DB_PATH)
+            conn = sqlite3.connect("test.db")
             cursor = conn.cursor()
 
             cursor.execute("SELECT Userid FROM User WHERE Email = ?", (user_email,))
@@ -78,28 +77,39 @@ def reset_password(token,new_password):
         except Exception as e:
             return {"error": "Invalid or expired token", "details": str(e)}, 400
 
-'''        
-def reset_password(token, new_password):
+def change_password(user_id,current_password,new_password):
     try:
-        decoded = decode_token(token)
-        #print("1")
-        if decoded.get("type") != "password_r   eset":
-            return {"error": "Invalid token"}, 400
-        #print("2")        
-        user = User.query.filter(User.email == decoded["sub"].lower()).first()
-        #print("3")
-        if not user:
-            return{"error" : "User not found"}, 404
-        #print("4")
-        
-        user.password_hash = bcrypt.generate_password_hash(new_password).decode('utf-8')
-        #print("5")
-        db.session.commit()
-        #print("6")                                 #debugging statement to find where exactly the code stop runnning
-        return {"message": "Password reset successful"}, 200
+        if not current_password or not new_password:
+            return {"error": "Missing password fields"}, 400
+
+        # Connect to SQLite DB
+        conn = sqlite3.connect("test.db")
+        cursor = conn.cursor()
+
+        # Get current hashed password from DB
+        cursor.execute("SELECT Password FROM User WHERE Userid = ?", (user_id,))
+        row = cursor.fetchone()
+
+        if not row:
+            conn.close()
+            return {"error": "User not found"}, 404
+
+        stored_hashed_password = row[0]
+
+        # Check if current password is correct
+        if not bcrypt.check_password_hash(stored_hashed_password, current_password):
+            conn.close()
+            return {"error": "Current password is incorrect"}, 401
+
+        # Hash new password
+        new_hashed_password = bcrypt.generate_password_hash(new_password).decode('utf-8')
+
+        # Update DB
+        cursor.execute("UPDATE User SET Password = ? WHERE Userid = ?", (new_hashed_password, user_id))
+        conn.commit()
+        conn.close()
+
+        return {"message": "Password changed successfully."}, 200
 
     except Exception as e:
-        #print("Exception in reset_password:", e)   #debugging statement to find the exact error
-        return {"error": "Invalid or expired token"}, 400
-'''
-
+        return {"error": "An error occurred", "details": str(e)}, 500

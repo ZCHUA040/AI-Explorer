@@ -72,13 +72,11 @@ blacklist = set()
 def check_if_token_in_blacklist(jwt_header, jwt_payload):
     return jwt_payload['jti'] in blacklist
 
-DB_PATH = os.path.join(os.path.dirname(__file__),'test.db')
-
 # Users Path
 @app.route('/users')
 def get_users():
     try: 
-        conn = sqlite3.connect(DB_PATH)
+        conn = sqlite3.connect('test.db')
         cursor = conn.cursor() 
 
         cursor.execute("SELECT Userid, Name, Password, Email FROM User")
@@ -122,6 +120,33 @@ def login():
     # TODO: Implement login logic (For now, return a mock response)
     #return {"message": "Login successful", "email": email}, 200
 
+#Current User
+@app.route('/me', methods=['GET'])
+@jwt_required()
+def get_current_user():
+    try:
+        user_id = get_jwt_identity()
+
+        conn = sqlite3.connect('test.db')
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT Name, Email, UserImage FROM User WHERE Userid = ?", (user_id,))
+        row = cursor.fetchone()
+        conn.close()
+
+        if row:
+            return {
+                'name': row[0],
+                'email': row[1],
+                'icon': row[2]
+            }, 200
+        else:
+            return {'error': 'User not found'}, 404
+
+    except Exception as e:
+        return {'error': str(e)}, 500
+    
+    
 #Logout Path
 @app.route('/logout', methods=['DELETE'])
 @jwt_required()
@@ -156,8 +181,25 @@ def reset_password():
     new_password = request.json.get("new_password")
     return recovery_account_controller.reset_password(token,new_password)
 
+@app.route('/change-password', methods=['POST'])
+@jwt_required()
+def change_password():
+    user_id = get_jwt_identity()
+    data = request.json
+    current_password = data.get('current_password')
+    new_password = data.get('new_password')
+    return recovery_account_controller.change_password(user_id,current_password,new_password)
+
+@app.route('/update-profile-picture', methods=['POST'])
+@jwt_required()
+def update_profile_icon():
+    user_id = get_jwt_identity()
+    data = request.json
+    icon = data.get('icon')
+    return user_controller.update_profile_icon(user_id, icon)
 
 #----------------------------------------------Profile related apis------------------------------------------
+'''
 @app.route('/profile', methods=['GET'])
 @jwt_required()
 def get_profile():
@@ -172,9 +214,7 @@ def update_profile():
     data = request.json
     #will add in the logic
     return 
-
-
-
+'''
 #----------------------------------------------Activity related apis------------------------------------------------
 
 #Get all activities
@@ -336,9 +376,9 @@ def get_activities_by_type_and_price_category():
 
 
 #----------------------------------------------Itinerary related apis------------------------------------------------
-
+'''
 @app.route("/get_my_itineraries", methods=["POST"])
-#@jwt_required()
+@jwt_required()
 def get_my_itineraries():
     """
     Route: /get_my_itineraries
@@ -351,10 +391,24 @@ def get_my_itineraries():
     userid = data["Userid"]
     
     return itinerary_controller.internal_get_my_itineraries(userid), 200
+'''
 
-
+@app.route("/get_my_itineraries", methods=["POST"])
+@jwt_required()
+def get_my_itineraries():
+    """
+    Route: /get_my_itineraries
+    Authentication: True
+    Input: Userid of current user
+    Output: Each element is a JSON containing fields Itineraryid, Userid, Title, Date, Details, Created
+    """
+    #Retrieve userid
+    userid = get_jwt_identity() 
+    print(f"JWT decoded successfully: {userid}")
+    return itinerary_controller.internal_get_my_itineraries(userid), 200
+'''
 @app.route("/get_shared_itineraries", methods=["POST"])
-#@jwt_required()
+@jwt_required()
 def get_shared_itineraries():
     """
     Route: /get_shared_itineraries
@@ -367,10 +421,26 @@ def get_shared_itineraries():
     userid = data["Userid"]
     
     return itinerary_controller.internal_get_shared_itineraries(userid), 200
+'''
+@app.route("/get_shared_itineraries", methods=["POST"])
+@jwt_required()
+def get_shared_itineraries():
+    """
+    Route: /get_shared_itineraries
+    Authentication: True
+    Input: Userid of current user
+    Output: Each element is a JSON containing fields Itineraryid, Userid, Title, Date, Details, Created
+    """
+    #Retrieve userid
+    #data = request.json
+    userid = get_jwt_identity() 
+    
+    return itinerary_controller.internal_get_shared_itineraries(userid), 200
+
 
 
 @app.route("/get_itinerary_by_itineraryid", methods=["POST"])
-#@jwt_required()
+@jwt_required()
 def get_itinerary_by_itineraryid():
     """
     Route: /get_itinerary_by_itineraryid
@@ -386,7 +456,7 @@ def get_itinerary_by_itineraryid():
 
 
 @app.route("/update_itinerary", methods=["POST"]) 
-#@jwt_required()
+@jwt_required()
 def update_itinerary():
     """
     Route: /update_itinerary
@@ -410,7 +480,7 @@ def update_itinerary():
 
 
 @app.route("/delete_itinerary", methods=["POST"])
-#@jwt_required()
+@jwt_required()
 def delete_itinerary():
     """
     Route: /delete_itinerary
@@ -429,9 +499,9 @@ def delete_itinerary():
     
     return {"Status" : "Error"}, 500
 
-    
+'''    
 @app.route("/generate_itinerary", methods=["POST"])
-#@jwt_required()
+@jwt_required()
 def generate_itinerary():
     """
     Route: /generate_itinerary
@@ -457,10 +527,64 @@ def generate_itinerary():
     end_time = data["end_time"]
     
     return itinerary_controller.internal_generate_itinerary(userid, title, date, activity_type, price_category, start_time, end_time)
+'''    
+@app.route("/generate_itinerary", methods=["POST"])
+@jwt_required()
+def generate_itinerary():
+    """
+    Route: /generate_itinerary
+    Authentication: True
+    Input:   
+        int (userid): Userid of the itineraries that is being requested
+        str (title): Title of itinerary
+        str (date): Date of itinerary YYYY-MM-DD
+        str (activity_type): Filter for activity, by default None
+        str (price_category): Filter for activity, by default None
+        str (start_time): Start time of itinerary, by default 0800
+        str (end_time): End time of itinerary, by default 2100
+    Output: Generated itineraryid
+    """
+    #Get inputs
+    data = request.json
+    userid = get_jwt_identity()
+    title = data["title"]
+    date = data["date"]
+    activity_type = data["activity_type"]
+    price_category = data["price_category"]
+    start_time = data["start_time"]
+    end_time = data["end_time"]
     
-    
+    return itinerary_controller.internal_generate_itinerary(userid, title, date, activity_type, price_category, start_time, end_time)
+
 @app.route("/share_itinerary", methods=["POST"])
-#@jwt_required()
+@jwt_required()
+def share_itinerary():
+    """
+    Route: /generate_itinerary
+    Authentication: True
+    Input:   
+        int (userid): Userid of sharer
+        int (itineraryid): Itineraryid of current itinerary to share
+        str (Sharename): Name of user to sharewith 
+    Output: Success or Failure
+    """
+    #Get inputs
+    data = request.json
+    userid = get_jwt_identity() 
+    itineraryid = data["Itineraryid"]
+    sharename = data["shareName"]
+    
+    status = itinerary_controller.internal_share_itinerary(userid, itineraryid, sharename)
+
+    if status:
+        return {"Status" : "Success"}, 200
+    
+    return {"Status" : "Error"}, 500
+
+
+'''    
+@app.route("/share_itinerary", methods=["POST"])
+@jwt_required()
 def share_itinerary():
     """
     Route: /generate_itinerary
@@ -483,7 +607,7 @@ def share_itinerary():
         return {"Status" : "Success"}, 200
     
     return {"Status" : "Error"}, 500
-
+'''
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     #app.debug = False

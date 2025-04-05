@@ -12,14 +12,14 @@ bcrypt = Bcrypt()
 blacklist = set()
 
 #Register User 
-DB_PATH = os.path.join(os.path.dirname(__file__), '..', 'test.db')
+#DB_PATH = os.path.join(os.path.dirname(__file__), '..', 'test.db')
 
 def register_user(username, email, password):
     if not username or not email or not password:
         return{"error" : "Missing required fields"}, 400
 
     try:
-        conn = sqlite3.connect(DB_PATH)
+        conn = sqlite3.connect("test.db")
         cursor = conn.cursor()
 
         cursor.execute("SELECT Name, Email FROM User WHERE Name = ? OR Email = ?", (username, email))
@@ -45,7 +45,6 @@ def register_user(username, email, password):
         return {"message": "Account registered successfully"}, 201
     
     except Exception as e:
-        db.session.rollback()
         return {"error": "User registration unsuccessful", "details": str(e)}, 500
 
 def login_user(email,password):
@@ -56,8 +55,7 @@ def login_user(email,password):
         return{"error" : "Password is required"}, 400
     
     try:
-        DB_PATH = os.path.join(os.path.dirname(__file__), '..', 'test.db')
-        conn = sqlite3.connect(DB_PATH)
+        conn = sqlite3.connect("test.db")
         cursor = conn.cursor()
 
         # Fetch user by email

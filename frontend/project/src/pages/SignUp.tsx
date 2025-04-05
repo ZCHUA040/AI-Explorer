@@ -3,7 +3,7 @@ import { Link , useNavigate } from 'react-router-dom';
 import { UserPlus, Mail, Lock, User } from 'lucide-react';
 import axios from 'axios';
 
-export default function SignUp() {
+export function RegisterPage() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -104,7 +104,7 @@ export default function SignUp() {
           <p className="text-sm text-gray-600">
             Already have an account?{' '}
             <Link
-              to="/"
+              to="/login"
               className="font-medium text-indigo-600 hover:text-indigo-500"
             >
               Sign in

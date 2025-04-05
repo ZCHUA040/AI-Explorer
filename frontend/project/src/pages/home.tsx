@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { MapPin, Coffee, Compass, Bus, Camera } from 'lucide-react';
 import { motion } from 'framer-motion';
 
+
 export function HomePage() {
   return (
     <div className="relative">
@@ -41,11 +42,11 @@ export function HomePage() {
           transition={{ duration: 0.6, delay: 0.4 }}
         >
           <Link to="/register">
-            <Button size="lg" className="min-w-[200px] bg-red-600 hover:bg-red-700">
+            <Button size="lg" className="min-w-[200px] bg-indigo-600 hover:bg-indigo-700">
               Start Exploring
             </Button>
           </Link>
-          <Link to="/activities">
+          <Link to="/activitymarketplace">
             <Button variant="outline" size="lg" className="min-w-[200px] bg-white/10 backdrop-blur-sm border-white/20">
               Browse Activities
             </Button>

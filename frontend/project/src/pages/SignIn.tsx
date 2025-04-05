@@ -4,7 +4,7 @@ import { LogIn, Mail, Lock } from 'lucide-react';
 import axios from 'axios';
 
 
-export default function SignIn() {
+export function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
@@ -19,10 +19,14 @@ export default function SignIn() {
         email,
         password,
       });
-
-      localStorage.setItem('token', response.data.access_token);
-      navigate('/'); // Redirect after successful login
+      const token = response.data.access_token;
+      localStorage.setItem('token', token);
+      console.log('Login successful');
+      console.log('Received token:', token);
+      console.log('Stored token in localStorage');  
+      navigate('/activitymarketplace'); // Redirect after successful login
     } catch (err: any) {
+      console.error('Login failed:', err.response?.data || err.message);
       setErrorMsg(err.response?.data?.error || 'Login failed');
     }
   };
@@ -97,7 +101,7 @@ export default function SignIn() {
           <p className="text-sm text-gray-600">
             Don't have an account?{' '}
             <Link
-              to="/signup"
+              to="/register"
               className="font-medium text-indigo-600 hover:text-indigo-500"
             >
               Create account

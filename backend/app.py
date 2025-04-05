@@ -130,15 +130,14 @@ def get_current_user():
         conn = sqlite3.connect('test.db')
         cursor = conn.cursor()
 
-        cursor.execute("SELECT Name, Email, UserImage FROM User WHERE Userid = ?", (user_id,))
+        cursor.execute("SELECT Name, Email FROM User WHERE Userid = ?", (user_id,))
         row = cursor.fetchone()
         conn.close()
 
         if row:
             return {
                 'name': row[0],
-                'email': row[1],
-                'icon': row[2]
+                'email': row[1]
             }, 200
         else:
             return {'error': 'User not found'}, 404

@@ -171,6 +171,7 @@ def internal_delete_itinerary(userid : int, itineraryid : int) -> bool:
     #Perform delete
     try:
         conn.execute("DELETE FROM Itineraries WHERE Itineraryid = ? AND Userid = ?", (itineraryid, userid))
+        conn.commit()
         conn.close()
         return True
     except:
@@ -211,7 +212,9 @@ def internal_generate_itinerary(userid : int, title : str, date : str, activity_
     else:
         activities = conn.execute("SELECT Activityid, NAME FROM Activities").fetchall()
     random.shuffle(activities)
-
+    if len(activities) == 0:
+        print(price_category, activity_type)
+        return False
 
     # Prompt for the Gemini model
     prompt = f"""

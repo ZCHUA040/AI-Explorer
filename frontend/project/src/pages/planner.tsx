@@ -25,7 +25,6 @@ interface PlannerFilters {
   price_category: string | null;
   start_time: string;
   end_time: string;
-  interests: string[] | null;
 }
 
 export function PlannerPage() {
@@ -39,7 +38,6 @@ export function PlannerPage() {
     price_category: null,
     start_time: '08:00',
     end_time: '21:00',
-    interests: null,
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -74,6 +72,10 @@ export function PlannerPage() {
       console.log("Response from backend:", data);
 
       if (response.ok) {
+        if (data.Error) {
+          toast.error(data.Error); // Show the error message from the backend
+          return; // Exit the function if there's an error
+        }
         // Redirect to the generated itinerary page using the itineraryId returned
         const itineraryId = data.Itineraryid; // Ensure API returns this field
         console.log("Received itinerary ID:", itineraryId);
@@ -84,6 +86,7 @@ export function PlannerPage() {
           toast.error('Itinerary ID not found');
         }
       } else {
+        if (response.status == 500) toast.error(data.Error)
         toast.error(data.message || 'Failed to generate itinerary');
       }
     } catch (error) {
@@ -138,7 +141,14 @@ export function PlannerPage() {
             </h2>
             <ReactDatePicker
               selected={new Date(filters.date)}
-              onChange={(date: Date) => setFilters(prev => ({ ...prev, date: format(date, 'yyyy-MM-dd') }))}
+              onChange={(date: Date | null) => {
+                if (date) {
+                  setFilters(prev => ({ ...prev, date: format(date, 'yyyy-MM-dd') }));
+                } else {
+                  // Handle the case when date is null, if necessary
+                }
+              }}
+              
               dateFormat="MMMM d, yyyy"
               minDate={new Date()}
               className="w-full rounded-md border border-gray-200 px-3 py-2"
@@ -191,7 +201,12 @@ export function PlannerPage() {
                   type="button"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  onClick={() => setFilters(prev => ({ ...prev, price_category: budget.label }))}
+                  onClick={() => {
+                    setFilters((prev) => ({
+                      ...prev,
+                      price_category: prev.price_category === budget.label ? "" : budget.label,
+                    }));
+                  }}
                   className={`p-4 rounded-lg border transition-colors ${
                     filters.price_category === budget.label
                       ? 'border-blue-500 bg-blue-50'
@@ -205,7 +220,7 @@ export function PlannerPage() {
             </div>
           </motion.div>
 
-          {/* Interests Selection */}
+          {/* Activity Type Selection */}
           <motion.div 
             className="space-y-4"
             initial={{ opacity: 0, x: -20 }}
@@ -214,7 +229,7 @@ export function PlannerPage() {
           >
             <h2 className="text-xl font-semibold flex items-center gap-2">
               <Tag className="h-5 w-5 text-blue-600" />
-              Interests
+              Activity Type
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {ACTIVITY_CATEGORIES.map((category) => (
@@ -224,17 +239,17 @@ export function PlannerPage() {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => {
-                    setFilters(prev => ({
+                    setFilters((prev) => ({
                       ...prev,
-                      interests: prev.interests && prev.interests.includes(category.name)
-                        ? null
-                        : [category.name],
+                      activity_type: prev.activity_type === category.name ? "" : category.name,
                     }));
                   }}
+                  
                   className={`p-4 rounded-lg border transition-colors ${
-                    filters.interests && filters.interests.includes(category.name)
+                      filters.activity_type === category.name
                       ? 'border-blue-500 bg-blue-50'
                       : 'border-gray-200 hover:border-gray-300'
+                    
                   }`}
                 >
                   <div className="text-2xl mb-2">{category.icon}</div>

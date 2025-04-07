@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Clock,
@@ -113,7 +113,41 @@ export function ItineraryDetailPage() {
   const handleShare = () => {
     setIsShareModalOpen(true);
   };
-
+  
+  const navigate = useNavigate(); // Declare navigate here
+  const handleDelete = async () => {
+    if (window.confirm('Are you sure you want to delete this itinerary?')) {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('http://127.0.0.1:5000/delete_itinerary', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            Itineraryid: itinerary?.Itineraryid,
+            Userid: itinerary?.Userid,
+          }),
+        });
+  
+        if (!response.ok) {
+          throw new Error('Failed to delete itinerary');
+        }
+  
+        const result = await response.json();
+        if (result.Status === 'Success') {
+          alert('Itinerary deleted successfully!');
+          navigate('/itineraries');  // Redirect to itineraries page
+        } else {
+          alert('Error deleting itinerary');
+        }
+      } catch (error) {
+        console.error('Error deleting itinerary:', error);
+        alert('An error occurred while deleting the itinerary.');
+      }
+    }
+  };
   const handleShareSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -159,6 +193,7 @@ export function ItineraryDetailPage() {
     }
   };
 
+
   if (loading) {
     return <div className="p-6 text-gray-500">Loading...</div>;
   }
@@ -189,6 +224,13 @@ export function ItineraryDetailPage() {
               >
                 <Share2 className="h-4 w-4" />
                 <span>Share Itinerary</span>
+              </button>
+              <button
+                onClick={handleDelete}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
+              >
+                <Pencil className="h-4 w-4" />
+                <span>Delete Itinerary</span>
               </button>
             </div>
           </div>

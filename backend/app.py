@@ -553,8 +553,11 @@ def generate_itinerary():
     start_time = data["start_time"]
     end_time = data["end_time"]
     
-    return itinerary_controller.internal_generate_itinerary(userid, title, date, activity_type, price_category, start_time, end_time)
-
+    itinerary = itinerary_controller.internal_generate_itinerary(userid, title, date, activity_type, price_category, start_time, end_time)
+    if itinerary:
+        return itinerary
+    return {"Error": "No such activities"}, 500
+    
 @app.route("/share_itinerary", methods=["POST"])
 @jwt_required()
 def share_itinerary():

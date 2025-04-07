@@ -4,7 +4,7 @@ import os
 import random, json
 
 # Configure Gemini API
-genai.configure(api_key="AIzaSyA-CNGpauCTkKon2-pQe3Qr7Kb8HsgjlFk")
+genai.configure(api_key="")
 
 # Define the activities list
 conn = sqlite3.connect("test.db")

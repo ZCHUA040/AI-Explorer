@@ -71,11 +71,14 @@ export function PlannerPage() {
       });
 
       const data = await response.json();
+      console.log("Response from backend:", data);
 
       if (response.ok) {
         // Redirect to the generated itinerary page using the itineraryId returned
-        const itineraryId = data.itineraryId; // Ensure API returns this field
+        const itineraryId = data.Itineraryid; // Ensure API returns this field
+        console.log("Received itinerary ID:", itineraryId);
         if (itineraryId) {
+          console.log("Redirecting to itinerary page...");
           navigate(`/itinerary/${itineraryId}`); // Use navigate for redirection
         } else {
           toast.error('Itinerary ID not found');

@@ -1,4 +1,4 @@
-import { MapPin, Coffee, Compass, Camera } from 'lucide-react';
+import { MapPin, Coffee, Compass, Camera, Palette, Users} from 'lucide-react';
 
 
 
@@ -57,14 +57,14 @@ export function HomePage() {
             <p className="text-gray-200">Capture Instagram-worthy moments</p>
           </div>
           <div className="bg-white/10 backdrop-blur-sm p-6 rounded-lg text-center">
-            <MapPin className="h-10 w-10 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Hidden Gems</h3>
-            <p className="text-gray-200">Discover secret local spots</p>
+            <Palette className="h-10 w-10 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold mb-2">Arts & Culture</h3>
+            <p className="text-gray-200">Experience the Rich Heritage of Singapore</p>
           </div>
           <div className="bg-white/10 backdrop-blur-sm p-6 rounded-lg text-center">
-            <Compass className="h-10 w-10 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Local Guides</h3>
-            <p className="text-gray-200">Follow curated local experiences</p>
+            <Users className="h-10 w-10 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold mb-2">Meet Others</h3>
+            <p className="text-gray-200">Share your joy with fellow explorers</p>
           </div>
         </div>
       </div>

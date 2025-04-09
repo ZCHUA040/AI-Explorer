@@ -1,14 +1,15 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
 import { Calendar, Clock, DollarSign, Tag } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { ACTIVITY_CATEGORIES } from '@/lib/utils';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Modal } from '../components/ui/modal';
+import { ACTIVITY_CATEGORIES } from '../lib/utils';
 import ReactDatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate from react-router-dom
+import { useNavigate } from 'react-router-dom';
 
 const BUDGET_CATEGORIES = [
   { id: 'free', label: 'Free', description: 'Free of cost' },
@@ -28,10 +29,12 @@ interface PlannerFilters {
 }
 
 export function PlannerPage() {
-  const navigate = useNavigate(); // Initialize useNavigate hook
+  const navigate = useNavigate();
+  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const [filters, setFilters] = useState<PlannerFilters>({
-    userid: 1, // Assuming a placeholder user ID, modify as needed
+    userid: 1,
     title: '',
     date: format(new Date(), 'yyyy-MM-dd'),
     activity_type: null,
@@ -42,7 +45,6 @@ export function PlannerPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("submitting");
     if (!filters.title) {
       toast.error('Please provide a title for the itinerary');
       return;
@@ -52,13 +54,10 @@ export function PlannerPage() {
       return;
     }
 
-    console.log("Generating");
     toast.success('Generating your perfect itinerary...');
 
     try {
       const token = localStorage.getItem('token');
-      console.log("Using token for generation:", token);
-      // Make the API call to generate the itinerary
       const response = await fetch('http://127.0.0.1:5000/generate_itinerary', {
         method: 'POST',
         headers: {
@@ -69,25 +68,25 @@ export function PlannerPage() {
       });
 
       const data = await response.json();
-      console.log("Response from backend:", data);
 
       if (response.ok) {
         if (data.Error) {
-          toast.error(data.Error); // Show the error message from the backend
-          return; // Exit the function if there's an error
+          toast.error(data.Error);
+          return;
         }
-        // Redirect to the generated itinerary page using the itineraryId returned
-        const itineraryId = data.Itineraryid; // Ensure API returns this field
-        console.log("Received itinerary ID:", itineraryId);
+        const itineraryId = data.Itineraryid;
         if (itineraryId) {
-          console.log("Redirecting to itinerary page...");
-          navigate(`/itinerary/${itineraryId}`); // Use navigate for redirection
+          navigate(`/itinerary/${itineraryId}`);
         } else {
           toast.error('Itinerary ID not found');
         }
       } else {
-        if (response.status == 500) toast.error(data.Error)
-        toast.error(data.message || 'Failed to generate itinerary');
+        if (response.status === 500) {
+          setErrorMessage('No activities found matching your criteria. Please try different options.');
+          setIsErrorModalOpen(true);
+        } else {
+          toast.error(data.message || 'Failed to generate itinerary');
+        }
       }
     } catch (error) {
       toast.error('An error occurred while generating the itinerary');
@@ -101,6 +100,14 @@ export function PlannerPage() {
       animate={{ opacity: 1, y: 0 }}
       className="container mx-auto py-8"
     >
+      <Modal
+        isOpen={isErrorModalOpen}
+        onClose={() => setIsErrorModalOpen(false)}
+        title="No Activities Found"
+      >
+        <p>{errorMessage}</p>
+      </Modal>
+
       <div className="max-w-4xl mx-auto">
         <motion.h1 
           initial={{ opacity: 0 }}
@@ -129,7 +136,6 @@ export function PlannerPage() {
             />
           </motion.div>
 
-          {/* Date Selection */}
           <motion.div 
             className="space-y-4"
             initial={{ opacity: 0, x: -20 }}
@@ -144,18 +150,14 @@ export function PlannerPage() {
               onChange={(date: Date | null) => {
                 if (date) {
                   setFilters(prev => ({ ...prev, date: format(date, 'yyyy-MM-dd') }));
-                } else {
-                  // Handle the case when date is null, if necessary
                 }
               }}
-              
               dateFormat="MMMM d, yyyy"
               minDate={new Date()}
               className="w-full rounded-md border border-gray-200 px-3 py-2"
             />
           </motion.div>
 
-          {/* Start Time and End Time */}
           <motion.div 
             className="space-y-4"
             initial={{ opacity: 0, x: -20 }}
@@ -183,7 +185,6 @@ export function PlannerPage() {
             </div>
           </motion.div>
 
-          {/* Budget Selection */}
           <motion.div 
             className="space-y-4"
             initial={{ opacity: 0, x: -20 }}
@@ -220,7 +221,6 @@ export function PlannerPage() {
             </div>
           </motion.div>
 
-          {/* Activity Type Selection */}
           <motion.div 
             className="space-y-4"
             initial={{ opacity: 0, x: -20 }}
@@ -244,12 +244,10 @@ export function PlannerPage() {
                       activity_type: prev.activity_type === category.name ? "" : category.name,
                     }));
                   }}
-                  
                   className={`p-4 rounded-lg border transition-colors ${
-                      filters.activity_type === category.name
+                    filters.activity_type === category.name
                       ? 'border-blue-500 bg-blue-50'
                       : 'border-gray-200 hover:border-gray-300'
-                    
                   }`}
                 >
                   <div className="text-2xl mb-2">{category.icon}</div>
@@ -259,7 +257,6 @@ export function PlannerPage() {
             </div>
           </motion.div>
 
-          {/* Submit Button */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

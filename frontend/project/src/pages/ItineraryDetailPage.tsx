@@ -331,7 +331,7 @@ export function ItineraryDetailPage() {
             <form onSubmit={handleShareSubmit}>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700" htmlFor="shareName">
-                  Share with
+                  Share with (Enter Name)
                 </label>
                 <input
                   id="shareName"

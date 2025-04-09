@@ -221,10 +221,10 @@ def internal_generate_itinerary(userid : int, title : str, date : str, activity_
         Create a detailed itinerary for a single day from {start_time} to {end_time} based on the following activities:
         - Have different type of activity of each slot
         - Each activity takes 2 hours.
-        - Travel time between activities is 1 hour.
+        - Travel time between activities is 1 hour. (E.g. {{"time": "08:00-12:00","travel": "Travel from place A to place B"}})
         - Lunch should be scheduled for 2 hours. (Only if start time is before noon)
-        - Lunch must occur at 1100 or 1200 or 1300.
-        - You need to travel to and from lunch.
+        - Lunch must occur at 1100 or 1200 or 1300. (E.g. {{"time": "08:00-12:00","lunch": "Lunch"}})
+        - You need to travel to and from lunch. (E.g. {{"time": "08:00-12:00","travel": "Travel from place A to Lunch"}})
         - If there is less than 2 hours left, end itinerary.
         - Put the activity id beside the timeslot
         - Ensure a logical sequence.

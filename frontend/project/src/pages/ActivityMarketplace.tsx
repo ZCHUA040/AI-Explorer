@@ -164,9 +164,11 @@ export function ActivityMarketplace() {
   );
 
   return (
-    <div>
+    
 
-      <h1 className="text-3xl font-bold text-gray-900 mb-4">Discover Singapore's Best Activities</h1>
+      <div className="pt-4">
+        <h1 className="text-3xl font-bold text-gray-900 mb-8">Discover Singapore's Best Activities</h1>
+        
       
       <div className="flex gap-4 mb-4">
         <div className="flex-1 relative">

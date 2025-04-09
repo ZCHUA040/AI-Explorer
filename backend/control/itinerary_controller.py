@@ -233,7 +233,7 @@ def internal_generate_itinerary(userid : int, title : str, date : str, activity_
         {activities}
 
         Output the itinerary in a structured json format with timeslots, do not include anything else.
-        Sample output {{"time": "0800-1200", "id":1, "activity":"Swimming"}}
+        Sample output {{"time": "08:00-12:00", "id":1, "activity":"Swimming"}}
         """
 
     # Generate response

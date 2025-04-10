@@ -3,8 +3,20 @@ from flask import current_app
 from flask_mail import Message
 from datetime import timedelta
 from extensions import bcrypt
-import sqlite3
+import sqlite3, re
 
+def is_strong_password(password: str) -> bool:
+    if len(password) < 8:
+        return False
+    if not re.search(r'[a-z]', password):
+        return False
+    if not re.search(r'[A-Z]', password):
+        return False
+    if not re.search(r'\d', password):
+        return False
+    if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
+        return False
+    return True
 
 def forgot_password_request(email):
     try:
@@ -46,6 +58,9 @@ def forgot_password_request(email):
     
 def reset_password(token,new_password):
         try:
+            if not is_strong_password(new_password):
+                return{"error" : "Password did not meet the requirement. It must be at least 8 characters long, include uppercase, lowercase, numbers, and special characters."}, 400
+    
             decoded = decode_token(token)
 
             if decoded.get("type") != "password_reset":
@@ -81,6 +96,9 @@ def change_password(user_id,current_password,new_password):
     try:
         if not current_password or not new_password:
             return {"error": "Missing password fields"}, 400
+                    
+        if not is_strong_password(new_password):
+            return{"error" : "Password did not meet the requirement. It must be at least 8 characters long, include uppercase, lowercase, numbers, and special characters."}, 400
 
         # Connect to SQLite DB
         conn = sqlite3.connect("test.db")

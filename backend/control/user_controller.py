@@ -90,12 +90,12 @@ def login_user(email,password):
         conn.close()
 
         if not row:
-            return {"error": "Invalid email or password"}, 401
+            return {"error": "Email not found and/or incorrect password"}, 401
         
         user_id , name, email_db, hashed_password = row
 
         if not bcrypt.check_password_hash(hashed_password,password):
-            return{"error" : "Invalid email or password"}, 401
+            return{"error" : "Email not found and/or incorrect password"}, 401
         
         access_token = create_access_token(identity=str(user_id))
 

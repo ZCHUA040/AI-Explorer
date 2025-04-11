@@ -197,23 +197,6 @@ def update_profile_icon():
     icon = data.get('icon')
     return user_controller.update_profile_icon(user_id, icon)
 
-#----------------------------------------------Profile related apis------------------------------------------
-'''
-@app.route('/profile', methods=['GET'])
-@jwt_required()
-def get_profile():
-    current_user_email = get_jwt_identity()  
-    #will add in the logic
-    return
-
-@app.route('/profile', methods=['PUT'])
-@jwt_required()
-def update_profile():
-    current_user_email = get_jwt_identity()
-    data = request.json
-    #will add in the logic
-    return 
-'''
 #----------------------------------------------Activity related apis------------------------------------------------
 
 #Get all activities

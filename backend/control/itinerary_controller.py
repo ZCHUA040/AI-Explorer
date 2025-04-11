@@ -143,11 +143,14 @@ def internal_update_itinerary(itineraryid : int, title : str, date : str, detail
         """, (date, details, title, itineraryid))
         
         conn.commit()
+        if cursor.rowcount == 0:
+            conn.close()
+            return False
         
         conn.close()
         return True
     
-    except:
+    except Exception as e:
         conn.close()
         return False
     
@@ -170,11 +173,15 @@ def internal_delete_itinerary(userid : int, itineraryid : int) -> bool:
     
     #Perform delete
     try:
-        conn.execute("DELETE FROM Itineraries WHERE Itineraryid = ? AND Userid = ?", (itineraryid, userid))
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM Itineraries WHERE Itineraryid = ? AND Userid = ?", (itineraryid, userid))
         conn.commit()
+        if cursor.rowcount == 0:
+            conn.close()
+            return False
         conn.close()
         return True
-    except:
+    except Exception as e:
         conn.close()
         return False
     
@@ -213,7 +220,6 @@ def internal_generate_itinerary(userid : int, title : str, date : str, activity_
         activities = conn.execute("SELECT Activityid, NAME FROM Activities").fetchall()
     random.shuffle(activities)
     if len(activities) == 0:
-        print(price_category, activity_type)
         return False
 
     # Prompt for the Gemini model
@@ -268,11 +274,12 @@ def internal_share_itinerary(userid : int, itineraryid : int, sharedname : int) 
     """
     conn = sqlite3.connect("test.db")
     
-    #Get the userid of the name
-    sharedid = conn.execute("SELECT Userid FROM User WHERE Name = ?",(sharedname,)).fetchone()[0]
 
     #Perform insertion
     try:
+        #Get the userid of the name
+        sharedid = conn.execute("SELECT Userid FROM User WHERE Name = ?",(sharedname,)).fetchone()[0]
+
         conn.execute(
             "INSERT INTO SharedWith (Userid, Itineraryid, Sharedid) VALUES (?, ?, ?)", 
             (userid, itineraryid, sharedid)

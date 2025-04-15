@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link , useNavigate } from 'react-router-dom';
 import { UserPlus, Mail, Lock, User } from 'lucide-react';
 import axios from 'axios';
+import toast from 'react-hot-toast';
+
 
 export function RegisterPage() {
   const [username, setUsername] = useState('');
@@ -22,6 +24,7 @@ export function RegisterPage() {
       });
 
     console.log("Registration success:", response.data);
+    toast.success(`Registered Successfully! 😄`);
     navigate('/login');
   } catch (err: any) {
     console.error("Registration failed:", err);

@@ -17,12 +17,15 @@ import { ActivityDetail } from './pages/ActivityDetail';
 import { EditItineraryPage } from './pages/EditItinerary';
 import { ChangePasswordPage } from './pages/ChangePassword';
 import PrivateRoute from './components/PrivateRoute';
+import { Toaster } from 'react-hot-toast';
+
 
 
 function App() {
   return (
     <Router>
       <div className="min-h-screen bg-gray-50">
+      <Toaster position="top-center" reverseOrder={false} />
         <main className="container mx-auto px-4 py-8">
           <Routes>
             {/* Public Routes */}

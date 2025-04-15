@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { MapPin, LogOut, Lock, ImageIcon, List } from 'lucide-react';
 import axios from 'axios';
 import { useAuthStore } from '@/store/auth';
+import toast from 'react-hot-toast';
+
 
 export default function Navbar() {
   const { logout } = useAuthStore(); // no need to get `user` from here anymore
@@ -39,6 +41,7 @@ export default function Navbar() {
   
     // Always clear auth state and redirect
     logout();
+    toast.success('Logout successful!');
     navigate('/');
   };
 

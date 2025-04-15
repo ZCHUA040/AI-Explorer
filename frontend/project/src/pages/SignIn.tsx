@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link , useNavigate} from 'react-router-dom';
 import { LogIn, Mail, Lock } from 'lucide-react';
 import axios from 'axios';
+import toast from 'react-hot-toast';
+
 
 
 export function LoginPage() {
@@ -21,9 +23,10 @@ export function LoginPage() {
       });
       const token = response.data.access_token;
       localStorage.setItem('token', token);
-      console.log('Login successful');
-      console.log('Received token:', token);
-      console.log('Stored token in localStorage');  
+      //console.log('Login successful');
+      //console.log('Received token:', token);
+      //console.log('Stored token in localStorage');  
+      toast.success(`Login Successful, Welcome back! 😄`);
       navigate('/activitymarketplace'); // Redirect after successful login
     } catch (err: any) {
       console.error('Login failed:', err.response?.data || err.message);

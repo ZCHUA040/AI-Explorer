@@ -210,6 +210,7 @@ def internal_generate_itinerary(userid : int, title : str, date : str, activity_
 
     # Define the activities list
     conn = sqlite3.connect("test.db")
+    
     if activity_type and price_category:
         activities = conn.execute("SELECT Activityid, NAME FROM Activities WHERE Price_Category = ? AND Type = ?", (price_category,activity_type)).fetchall()
     elif activity_type:

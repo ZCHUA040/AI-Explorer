@@ -536,6 +536,10 @@ def generate_itinerary():
     start_time = data["start_time"]
     end_time = data["end_time"]
     
+    if activity_type == "":
+        activity_type = None
+    if price_category == "":
+        price_category = None
     itinerary = itinerary_controller.internal_generate_itinerary(userid, title, date, activity_type, price_category, start_time, end_time)
     if itinerary:
         return itinerary

@@ -6,7 +6,7 @@ from flask import jsonify
 from flask_jwt_extended import create_access_token, get_jwt
 from flask_bcrypt import Bcrypt
 from datetime import datetime, timedelta
-from email_validator import validate_email
+#from email_validator import validate_email
 
 
 bcrypt = Bcrypt()

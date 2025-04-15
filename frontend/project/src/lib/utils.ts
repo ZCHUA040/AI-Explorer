@@ -15,7 +15,7 @@ export function formatPrice(price: number) {
 
 export const ACTIVITY_CATEGORIES = [
   { id: 'fitness', name: 'Fitness & Wellness', icon: '⚽' },
-  { id: 'culture', name: 'Culture & Heritage', icon: '🏮' },
+  { id: 'culture', name: 'Cultural & Heritage', icon: '🏮' },
   { id: 'outdoor', name: 'Outdoor & Nature', icon: '🌿' },
   { id: 'workshops', name: 'Workshops & Classes', icon: '🎭' },
   { id: 'events', name: 'Social & Community Events', icon: '🎡' },

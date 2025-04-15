@@ -73,7 +73,7 @@ export default function Navbar() {
           {/* Logo */}
           <Link to="/activitymarketplace" className="flex items-center space-x-2">
             <MapPin className="h-8 w-8 text-indigo-600" />
-            <span className="text-xl font-bold text-gray-900">SingaXplore</span>
+            <span className="text-xl font-bold text-gray-900">AiXplorer</span>
           </Link>
 
           {/* Nav Links */}

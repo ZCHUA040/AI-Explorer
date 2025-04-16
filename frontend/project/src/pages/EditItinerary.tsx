@@ -108,7 +108,7 @@ export function EditItineraryPage() {
       setError('Please enter a new activity ID');
       return;
     }
-
+  
     try {
       const response = await fetch(`http://127.0.0.1:5000/get_activity_by_id`, {
         method: 'POST',
@@ -117,20 +117,49 @@ export function EditItineraryPage() {
         },
         body: JSON.stringify({ id: parseInt(newActivityId, 10) }),
       });
-
+  
       if (!response.ok) {
         throw new Error('Failed to fetch activity');
       }
-
+  
       const activityData = await response.json();
-      
+      const newActivityName = activityData.Name;
+  
       const newSchedule = [...schedule];
+  
+      // Update current item with new activity
       newSchedule[index] = {
         ...newSchedule[index],
         id: parseInt(newActivityId, 10),
-        activity: activityData.Name,
+        activity: newActivityName,
       };
-      
+  
+      // === UPDATE NEXT ITEM (if travel) ===
+      if (index + 1 < newSchedule.length) {
+        const nextItem = newSchedule[index + 1];
+        if (nextItem.travel) {
+          const match = nextItem.travel.match(/to (.+)$/i);
+          const destination = match ? match[1] : 'destination';
+          newSchedule[index + 1] = {
+            ...nextItem,
+            travel: `Travel from ${newActivityName} to ${destination}`,
+          };
+        }
+      }
+  
+      // === UPDATE PREVIOUS ITEM (if travel) ===
+      if (index - 1 >= 0) {
+        const prevItem = newSchedule[index - 1];
+        if (prevItem.travel) {
+          const match = prevItem.travel.match(/from (.+?) to/i);
+          const origin = match ? match[1] : 'origin';
+          newSchedule[index - 1] = {
+            ...prevItem,
+            travel: `Travel from ${origin} to ${newActivityName}`,
+          };
+        }
+      }
+  
       setSchedule(newSchedule);
       setEditingIndex(null);
       setNewActivityId('');
@@ -139,7 +168,7 @@ export function EditItineraryPage() {
       setError('Failed to update activity. Please check the activity ID.');
     }
   };
-
+  
   const getIcon = (item: ScheduleItem) => {
     if (item.travel) return <MapPin className="h-5 w-5" />;
     if (item.lunch) return <UtensilsCrossed className="h-5 w-5" />;

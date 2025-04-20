@@ -56,29 +56,6 @@ AiXexplore is a full-stack web application designed to help users generate perso
 
 ### Database
 - **SQLite** (for development/testing)
-
----
-
-## 📁 Project Structure
-
-```bash
-├── backend/
-│   ├── app.py
-│   ├── controllers/
-│   ├── usercontroller.py
-│   ├── itinerarycontroller.py
-│   ├── utils/
-│   └── test.db
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── store/
-│   │   └── App.tsx
-├── requirements.txt
-├── README.md
-```
-
 ---
 
 ## 🚀 Getting Started
@@ -92,7 +69,7 @@ pip install -r requirements.txt
 ```
 3. Run Flask server:
 ```bash
-flask run
+python app.py
 ```
 
 ### Frontend Setup

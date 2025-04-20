@@ -1,5 +1,5 @@
 # SC2006
-# AiXexplore 🌍
+# AiXexplore 📍
 
 AiXexplore is a full-stack web application designed to help users generate personalized, AI-powered day-trip itineraries across Singapore. It offers a seamless user experience with secure authentication, activity discovery, intelligent planning, and itinerary management.
 
@@ -103,23 +103,6 @@ npm run dev
 | Shared Itineraries | `/shared_itineraries` | View shared plans |
 | Change Password | `/change-password` | Change current password |
 | Forgot Password | `/forgot-password` | Start password reset flow |
-| Reset Password | `/reset-password` | Enter new password via link |
-
----
-
-## 📆 Non-Functional Requirements
-
-- **Performance**: Pages load < 3s
-- **Security**: AES-256 for sensitive data, JWT protection
-- **Availability**: 95% uptime expected
-- **Usability**: < 6 clicks for itinerary generation
-- **Compliance**: PDPA and GDPR aligned
-
----
-
-## 💼 License
-
-This project is open-source under the [MIT License](LICENSE).
 
 ---
 

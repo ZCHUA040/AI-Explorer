@@ -88,17 +88,6 @@ AiXexplore is a full-stack web application designed to help users generate perso
 
 ---
 
-## Diagrams
-
-1. [Use Case Diagram](https://github.com/softwarelab3/2006-SCSB-T5/blob/main/Lab%205/Use%20Case%20Diagram.png)
-2. [Architecture Diagram](https://github.com/softwarelab3/2006-SCSB-T5/blob/main/Lab%205/System%20Architecture.png)
-3. [Class Diagram](https://github.com/softwarelab3/2006-SCSB-T5/blob/main/Lab%205/Class%20Diagram.png)
-4. [Stereotype Class Diagram](https://github.com/softwarelab3/2006-SCSB-T5/blob/main/Lab%205/Boundary%20Class%20Diagram.png)
-5. [Sequence Diagrams](https://github.com/softwarelab3/2006-SCSB-T5/blob/main/Lab%205/Sequence%20Diagrams.pdf)
-6. [Dialog Map](https://github.com/softwarelab3/2006-SCSB-T5/blob/main/Lab%205/Dialog%20Map.png)
-
----
-
 ## 🚀 Getting Started
 
 ### Backend Setup

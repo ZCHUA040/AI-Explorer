@@ -1,7 +1,36 @@
 # SC2006
 # AiXexplore 📍
 
-AiXexplore is a full-stack web application designed to help users generate personalized, AI-powered day-trip itineraries across Singapore. It offers a seamless user experience with secure authentication, activity discovery, intelligent planning, and itinerary management.
+AiXexplore is a full-stack web application designed to help users generate personalised, AI-powered day-trip itineraries across Singapore. It offers a seamless user experience with secure authentication, activity discovery, intelligent planning, and itinerary management.
+
+<p align="center">
+  <img src="/landing page.png" width=300 />
+</p>
+
+<p align="center">
+    <a href="https://github.com/softwarelab3/2006-SCSB-T5/tree/lab5-frontend">Frontend</a>
+    |
+    <a href="https://github.com/softwarelab3/2006-SCSB-T5/tree/lab5-backend">Backend</a>
+    |
+    <a href="https://youtu.be/8AF-AX5OjSw">Demo Video</a>
+    |
+    <a href="https://github.com/softwarelab3/2006-SCSB-T5/blob/main/Lab%205/Lab%205%20SRS%20Deliverables.pdf">SRS</a>
+</p>
+
+## 📚 Table of Contents
+
+- [AiXexplore 📍](#aixexplore-)
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Diagrams](#diagrams)
+- [Getting Started](#-getting-started)
+  - [Backend Setup](#backend-setup)
+  - [Frontend Setup](#frontend-setup)
+- [Key Functional Pages](#-key-functional-pages)
+- [External APIs](#external-apis)
+- [Supporting Documentation](#supporting-documentations)
+- [Demo Video](#demo-video)
+- [Contributors](#contributors)
 
 ---
 
@@ -56,6 +85,18 @@ AiXexplore is a full-stack web application designed to help users generate perso
 
 ### Database
 - **SQLite** (for development/testing)
+
+---
+
+## Diagrams
+
+1. [Use Case Diagram](https://github.com/softwarelab3/2006-SCSB-T5/blob/main/Lab%205/Use%20Case%20Diagram.png)
+2. [Architecture Diagram](https://github.com/softwarelab3/2006-SCSB-T5/blob/main/Lab%205/System%20Architecture.png)
+3. [Class Diagram](https://github.com/softwarelab3/2006-SCSB-T5/blob/main/Lab%205/Class%20Diagram.png)
+4. [Stereotype Class Diagram](https://github.com/softwarelab3/2006-SCSB-T5/blob/main/Lab%205/Boundary%20Class%20Diagram.png)
+5. [Sequence Diagrams](https://github.com/softwarelab3/2006-SCSB-T5/blob/main/Lab%205/Sequence%20Diagrams.pdf)
+6. [Dialog Map](https://github.com/softwarelab3/2006-SCSB-T5/blob/main/Lab%205/Dialog%20Map.png)
+
 ---
 
 ## 🚀 Getting Started
@@ -84,12 +125,6 @@ npm install
 npm run dev
 ```
 
-### URLs
-- Frontend: `http://localhost:5173`
-- Backend: `http://localhost:5000`
-
----
-
 ## 📂 Key Functional Pages
 
 | Page | Route | Description |
@@ -106,5 +141,32 @@ npm run dev
 
 ---
 
-## 🙋‍ Contact
-Feel free to contribute or report issues in this repository!
+
+# External APIs
+
+1. **Gemini API**
+   1. Gen-Ai (https://ai.google.dev/gemini-api/docs)
+
+---
+
+# Contributors
+
+The following contributors have contributed to the whole Software Developement Life-cycle, including (not exhausive):
+
+1. Ideation and refinement
+2. Generation of functional and non-funtional requirements
+3. Generation of Use Cases and Descriptions
+4. UI/UX Mockup and Prototyping (Figma)
+5. Design of Architecture Diagram, Class Diagram, Sequence Diagrams, and Dialog Map Diagram
+6. Development of Application
+7. Black-box and White-box Testing
+8. Documentations
+
+| Name           | Github Username                                | Role                   |
+| -------------- | ---------------------------------------------  | ---------------------- |
+| Agarwal Aryaman|                                                | Frontend               |
+| Chua Zhi Li    | [ZCHUA040](https://github.com/ZCHUA040)        | Full-Stack / Backend   |
+| Gu Boyuan      | [boyuan618](https://github.com/boyuan618)      | Full-Stack / Backend   |
+| Guo Kexuan     | [kx0224](https://github.com/kx0224)            | Frontend               |
+| Ng Yuhang Dilon| [dillydecoded](https://github.com/dillydecoded)| Frontend               |
+| Seet Jia Viona | [vionaseet](https://github.com/vionaseet)      | Backend                |

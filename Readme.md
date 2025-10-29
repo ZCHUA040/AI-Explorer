@@ -1,4 +1,3 @@
-# SC2006
 # AiXexplore 📍
 
 AiXexplore is a full-stack web application designed to help users generate personalised, AI-powered day-trip itineraries across Singapore. It offers a seamless user experience with secure authentication, activity discovery, intelligent planning, and itinerary management.
